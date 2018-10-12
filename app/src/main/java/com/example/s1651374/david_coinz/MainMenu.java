@@ -13,8 +13,18 @@ public class MainMenu extends AppCompatActivity {
         setContentView(R.layout.activity_main_menu);
     }
 
-    public void goToMapScreen(View view){
+    public void goToMapScreen(View view) {
         Intent intent = new Intent (this, MapScreen.class);
+        startActivity(intent);
+    }
+
+    public void goToSettings(View view) {
+        Intent intent = new Intent (this, Settings.class);
+        startActivity(intent);
+    }
+
+    public void goToDepositCoins(View view) {
+        Intent intent = new Intent (this, DepositCoins.class);
         startActivity(intent);
     }
 

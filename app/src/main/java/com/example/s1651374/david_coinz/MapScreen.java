@@ -1,10 +1,15 @@
 package com.example.s1651374.david_coinz;
 
+import android.content.Intent;
+import android.graphics.Camera;
 import android.location.Location;
 import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Toolbar;
 
 import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.location.LocationEngineListener;
@@ -22,10 +27,22 @@ import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerPlugin;
 import com.mapbox.mapboxsdk.plugins.locationlayer.modes.CameraMode;
 import com.mapbox.mapboxsdk.plugins.locationlayer.modes.RenderMode;
 
+import com.mapbox.geojson.Feature;
+import com.mapbox.geojson.FeatureCollection;
+import com.mapbox.geojson.Geometry;
+import com.mapbox.geojson.Point;
+import com.google.gson.JsonObject;
+import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
+import com.mapbox.mapboxsdk.annotations.Icon;
+import com.mapbox.mapboxsdk.annotations.IconFactory;
+import com.mapbox.mapboxsdk.annotations.Marker;
+import com.mapbox.mapboxsdk.annotations.MarkerOptions;
+
 import java.util.List;
 
 public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, LocationEngineListener, PermissionsListener {
 
+    private String tag = "MapScreen";
     private MapView mapView;
     private MapboxMap map;
     private PermissionsManager permissionsManager;
@@ -36,24 +53,38 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Mapbox.getInstance(this, getString(R.string.access_token));
         setContentView(R.layout.activity_map_screen);
-        mapView = (MapView) findViewById(R.id.mapView);
+
+        Mapbox.getInstance(this, getString(R.string.access_token));
+
+        mapView = (MapView) findViewById(R.id.mapboxMapView);
+
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
     }
 
     @Override
     public void onMapReady(MapboxMap mapboxMap) {
-        map = mapboxMap;
-        enableLocation();
+        if(mapboxMap == null) {
+            Log.d(tag, "[onMapReady] mapBox is null");
+        } else {
+            map = mapboxMap;
+            // Set user interface options
+            map.getUiSettings().setCompassEnabled(true);
+            map.getUiSettings().setZoomControlsEnabled(true);
+
+            // Make location information available
+            enableLocation();
+        }
     }
 
     private void enableLocation() {
         if (PermissionsManager.areLocationPermissionsGranted(this)) {
+            Log.d(tag, "Permissions are granted");
             initializeLocationEngine();
             initializeLocationLayer();
         } else {
+            Log.d(tag, "Permissions are not granted");
             permissionsManager = new PermissionsManager((this));
             permissionsManager.requestLocationPermissions(this);
         }
@@ -62,6 +93,8 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
     @SuppressWarnings("MissingPermission")
     private void  initializeLocationEngine() {
         locationEngine = new LocationEngineProvider(this).obtainBestLocationEngineAvailable();
+        locationEngine.setInterval(5000);
+        locationEngine.setFastestInterval(1000);
         locationEngine.setPriority(LocationEnginePriority.HIGH_ACCURACY);
         locationEngine.activate();
 
@@ -76,26 +109,39 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
 
     @SuppressWarnings("MissingPermission")
     private void initializeLocationLayer() {
-        locationLayerPlugin = new LocationLayerPlugin(mapView, map, locationEngine);
-        locationLayerPlugin.setLocationLayerEnabled(true);
-        locationLayerPlugin.setCameraMode(CameraMode.TRACKING);
-        locationLayerPlugin.setRenderMode(RenderMode.NORMAL);
+        if (mapView == null) {
+            Log.d(tag, "mapView is null");
+        } else {
+            if (map == null) {
+                Log.d(tag, "map is null");
+            } else {
+                locationLayerPlugin = new LocationLayerPlugin(mapView, map, locationEngine);
+                locationLayerPlugin.setLocationLayerEnabled(true);
+                locationLayerPlugin.setCameraMode(CameraMode.TRACKING);
+                locationLayerPlugin.setRenderMode(RenderMode.NORMAL);
+            }
+        }
     }
 
     private void setCameraPosition(Location location) {
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),
-                location.getLongitude()), 13.0));
+        LatLng latLng = new LatLng(location.getLatitude(),
+                location.getLongitude());
+        map.animateCamera(CameraUpdateFactory.newLatLng(latLng));
     }
 
     @Override
     @SuppressWarnings("MissingPermission")
     public void onConnected() {
+        Log.d(tag, "[onConnected] requesting location updates");
         locationEngine.requestLocationUpdates();
     }
 
     @Override
     public void onLocationChanged(Location location) {
-        if (location != null) {
+        if (location == null) {
+            Log.d(tag, "[onLocationChanged] location is null");
+        } else {
+            Log.d(tag, "[onLocationChanged] location is not null");
             originLocation = location;
             setCameraPosition(location);
         }
@@ -103,13 +149,17 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
 
     @Override
     public void onExplanationNeeded(List<String> permissionsToExplain) {
+        Log.d(tag, "Permissions: " + permissionsToExplain.toString());
         // Present toast or dialogue.
     }
 
     @Override
     public void onPermissionResult(boolean granted) {
+        Log.d(tag, "[onPermissionResult] granted == " + granted);
         if (granted) {
             enableLocation();
+        } else {
+            // Open a dialogue with the user
         }
     }
 
@@ -174,6 +224,16 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
             locationEngine.deactivate();
         }
         mapView.onDestroy();
+    }
+
+    public void goToMainMenu(View view) {
+        Intent intent = new Intent (this, MainMenu.class);
+        startActivity(intent);
+    }
+
+    public void goToDepositCoins(View view) {
+        Intent intent = new Intent (this, DepositCoins.class);
+        startActivity(intent);
     }
 
 }

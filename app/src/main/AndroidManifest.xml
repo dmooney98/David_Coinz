@@ -20,7 +20,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MapScreen"></activity>
+        <activity android:name=".MapScreen" />
+        <activity android:name=".Settings" />
+        <activity android:name=".DepositCoins"></activity>
     </application>
 
 </manifest>
