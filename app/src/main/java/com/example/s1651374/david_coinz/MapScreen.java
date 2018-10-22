@@ -5,10 +5,12 @@ import android.graphics.Camera;
 import android.location.Location;
 import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 import android.widget.Toolbar;
 
 import com.mapbox.android.core.location.LocationEngine;
@@ -49,6 +51,7 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
     private LocationEngine locationEngine;
     private LocationLayerPlugin locationLayerPlugin;
     private Location originLocation;
+    private String mapdataString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +64,9 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
 
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
+
+        Bundle bundle = getIntent().getExtras();
+        mapdataString = bundle.getString("mapdata");
     }
 
     @Override
@@ -75,6 +81,22 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
 
             // Make location information available
             enableLocation();
+
+            FeatureCollection featureCollection = FeatureCollection.fromJson(mapdataString);
+            List<Feature> features = featureCollection.features();
+            for (Feature f : features) {
+                if (f.geometry() instanceof Point) {
+
+                    map.addMarker(
+                            new MarkerOptions().position(new LatLng(
+                                    ((Point) f.geometry()).latitude(),
+                                    ((Point) f.geometry()).longitude()
+                            )).setTitle(f.properties().get("marker-symbol").getAsString())
+                            .setSnippet(f.properties().get("currency").getAsString())
+                    );
+                }
+            }
+
         }
     }
 
@@ -159,6 +181,8 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
         if (granted) {
             enableLocation();
         } else {
+            //Snackbar request_location = Snackbar.make(mapView, "Location is required to play, please enable this in settings", Snackbar.LENGTH_LONG);
+            //request_location.show();
             // Open a dialogue with the user
         }
     }
