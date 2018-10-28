@@ -19,9 +19,10 @@ public class MainMenu extends AppCompatActivity {
 
     private final String tag = "MainMenu";
 
-    private String downloadDate = ""; // Format: YYYY/MM/DD
+    private String lastDownloadDate = "";
+    private String today = ""; // Format: YYYY/MM/DD
     private final String preferencesFile = "MyPrefsFile"; // for storing preferences
-    private String mapdata;
+    private String mapdata = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,18 +39,27 @@ public class MainMenu extends AppCompatActivity {
                 Context.MODE_PRIVATE);
 
         // use "" as the default value (this might be the first time tha app is run)
-        downloadDate = settings.getString("lastDownloadDate","");
-        downloadDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
-        Log.d(tag ,"[onStart] Recalled lastDownloadDate is '" + downloadDate + "'");
+        lastDownloadDate = settings.getString("lastDownloadDate","");
+        Log.d(tag ,"[onStart] Recalled lastDownloadDate is '" + lastDownloadDate + "'");
 
-        String link = "http://www.homepages.inf.ed.ac.uk/stg/coinz/" + downloadDate + "/coinzmap.geojson";
-        AsyncTask<String, Void, String> data = new DownloadFileTask().execute(link);
-        try {
-            mapdata = data.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
+        today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+        mapdata = settings.getString("mapdata", "");
+
+        if ((!today.equals(lastDownloadDate)) || mapdata.equals("")) {
+            String link = "http://www.homepages.inf.ed.ac.uk/stg/coinz/" + today + "/coinzmap.geojson";
+            AsyncTask<String, Void, String> data = new DownloadFileTask().execute(link);
+            try {
+                mapdata = data.get();
+                lastDownloadDate = today;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+            Toast.makeText(this, "Map downloading", Toast.LENGTH_LONG).show();
+        }
+        else {
+            Toast.makeText(this, "Today's map has been downloaded", Toast.LENGTH_LONG).show();
         }
 
     }
@@ -57,13 +67,15 @@ public class MainMenu extends AppCompatActivity {
     @Override
     public void onStop() {
         super.onStop();
-        Log.d(tag, "[onStop] Storing lastDownloadDate of " + downloadDate);
+        Log.d(tag, "[onStop] Storing lastDownloadDate of " + lastDownloadDate);
+        Log.d(tag, "[onStop] Storing mapdata as " + mapdata);
         // All objects are from android.context.Context
         SharedPreferences settings = getSharedPreferences(preferencesFile,
                 Context.MODE_PRIVATE);
         // We need an Editor object to make preference changes
         SharedPreferences.Editor editor = settings.edit();
-        editor.putString("lastDownloadDate", downloadDate);
+        editor.putString("lastDownloadDate", lastDownloadDate);
+        editor.putString("mapdata", mapdata);
         // Apply the edits!
         editor.apply();
     }

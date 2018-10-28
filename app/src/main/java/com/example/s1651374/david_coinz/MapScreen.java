@@ -1,6 +1,8 @@
 package com.example.s1651374.david_coinz;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Camera;
 import android.location.Location;
 import android.os.PersistableBundle;
@@ -52,6 +54,10 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
     private LocationLayerPlugin locationLayerPlugin;
     private Location originLocation;
     private String mapdataString;
+    private FeatureCollection featureCollection;
+    private List<Feature> features;
+    private Marker[] markers = new Marker[50];
+    private boolean[] removed = new boolean[50];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,18 +88,40 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
             // Make location information available
             enableLocation();
 
-            FeatureCollection featureCollection = FeatureCollection.fromJson(mapdataString);
-            List<Feature> features = featureCollection.features();
+            featureCollection = FeatureCollection.fromJson(mapdataString);
+            features = featureCollection.features();
+
+
+            int i = 0;
+
             for (Feature f : features) {
                 if (f.geometry() instanceof Point) {
 
-                    map.addMarker(
+                    Icon icon = determineMarker(f.properties().get("currency").getAsString(), f.properties().get("marker-symbol").getAsString());
+
+                    String title = f.properties().get("marker-symbol").getAsString();
+                    String snippet = f.properties().get("currency").getAsString();
+                    LatLng latLng = new LatLng(((Point) f.geometry()).latitude(), ((Point) f.geometry()).longitude());
+
+
+                    Marker current = map.addMarker(new MarkerOptions().position(latLng).title(title).snippet(snippet).icon(icon));
+                    markers[i] = current;
+                    i++;
+                    /*markers[i].title(title);
+                    markers[i].snippet(snippet);
+                    markers[i].icon(icon);
+                    markers[i].position(latLng);
+                    map.addMarker(markers[i]);
+                    i++;*/
+
+                    /*map.addMarker(
                             new MarkerOptions().position(new LatLng(
                                     ((Point) f.geometry()).latitude(),
                                     ((Point) f.geometry()).longitude()
                             )).setTitle(f.properties().get("marker-symbol").getAsString())
                             .setSnippet(f.properties().get("currency").getAsString())
-                    );
+                            .icon(icon)
+                    );*/
                 }
             }
 
@@ -167,6 +195,28 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
             originLocation = location;
             setCameraPosition(location);
         }
+        SharedPreferences settings = getSharedPreferences("MyPrefsFile",
+                Context.MODE_PRIVATE);
+        double lat = Double.parseDouble(settings.getString("latDifficulty", "0.0005"));
+        double lng = Double.parseDouble(settings.getString("lngDifficulty", "0.0005"));
+        int i = 0;
+        for (Feature f : features) {
+            if (f.geometry() instanceof Point) {
+                if (removed[i] == false){
+                    if ((location.getLatitude() > (((Point) f.geometry()).latitude() - lat)) &&
+                            (location.getLatitude() < (((Point) f.geometry()).latitude() + lat)) &&
+                            (location.getLongitude() > (((Point) f.geometry()).longitude() - lng)) &&
+                            (location.getLongitude() < (((Point) f.geometry()).longitude() + lng))) {
+                        String currency = f.properties().get("currency").getAsString();
+                        String value = f.properties().get("marker-symbol").getAsString();
+                        Toast.makeText(this, "You found " + value + " " + currency + "!", Toast.LENGTH_LONG).show();
+                        map.removeMarker(markers[i]);
+                        removed[i] = true;
+                    }
+                }
+                i++;
+            }
+        }
     }
 
     @Override
@@ -226,6 +276,12 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
         if (locationLayerPlugin != null) {
             locationLayerPlugin.onStop();
         }
+        Log.d(tag, "[onStop] Storing mapdata as " + mapdataString);
+        SharedPreferences settings = getSharedPreferences("MyPrefsFile",
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("mapdata", mapdataString);
+        editor.apply();
         mapView.onStop();
     }
 
@@ -258,6 +314,177 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
     public void goToDepositCoins(View view) {
         Intent intent = new Intent (this, DepositCoins.class);
         startActivity(intent);
+    }
+
+    // Method which determines which marker should be displayed for the Coin, dependent on it's currency type and value
+    // This was made as a separate method as, although not CPU heavy, it takes up a lot of space and would clutter the
+    // earlier methods which contain other important lines of code.
+    public Icon determineMarker(String currency, String symbol) {
+        IconFactory iconFactory = IconFactory.getInstance(MapScreen.this);
+        if (currency.equals("PENY")) {
+            if (symbol.equals("0")) {
+                return iconFactory.fromResource(R.drawable.peny0);
+
+            }
+            else if (symbol.equals("1")) {
+                return iconFactory.fromResource(R.drawable.peny1);
+
+            }
+            else if (symbol.equals("2")) {
+                return iconFactory.fromResource(R.drawable.peny2);
+
+            }
+            else if (symbol.equals("3")) {
+                return iconFactory.fromResource(R.drawable.peny3);
+
+            }
+            else if (symbol.equals("4")) {
+                return iconFactory.fromResource(R.drawable.peny4);
+
+            }
+            else if (symbol.equals("5")) {
+                return iconFactory.fromResource(R.drawable.peny5);
+
+            }
+            else if (symbol.equals("6")) {
+                return iconFactory.fromResource(R.drawable.peny6);
+
+            }
+            else if (symbol.equals("7")) {
+                return iconFactory.fromResource(R.drawable.peny7);
+
+            }
+            else if (symbol.equals("8")) {
+                return iconFactory.fromResource(R.drawable.peny8);
+
+            }
+            else {
+                return iconFactory.fromResource(R.drawable.peny9);
+            }
+        }
+        else if (currency.equals("DOLR")) {
+            if (symbol.equals("0")) {
+                return iconFactory.fromResource(R.drawable.dolr0);
+
+            }
+            else if (symbol.equals("1")) {
+                return iconFactory.fromResource(R.drawable.dolr1);
+
+            }
+            else if (symbol.equals("2")) {
+                return iconFactory.fromResource(R.drawable.dolr2);
+
+            }
+            else if (symbol.equals("3")) {
+                return iconFactory.fromResource(R.drawable.dolr3);
+
+            }
+            else if (symbol.equals("4")) {
+                return iconFactory.fromResource(R.drawable.dolr4);
+
+            }
+            else if (symbol.equals("5")) {
+                return iconFactory.fromResource(R.drawable.dolr5);
+
+            }
+            else if (symbol.equals("6")) {
+                return iconFactory.fromResource(R.drawable.dolr6);
+
+            }
+            else if (symbol.equals("7")) {
+                return iconFactory.fromResource(R.drawable.dolr7);
+
+            }
+            else if (symbol.equals("8")) {
+                return iconFactory.fromResource(R.drawable.dolr8);
+
+            }
+            else {
+                return iconFactory.fromResource(R.drawable.dolr9);
+            }
+        }
+        else if (currency.equals("SHIL")) {
+            if (symbol.equals("0")) {
+                return iconFactory.fromResource(R.drawable.shil0);
+
+            }
+            else if (symbol.equals("1")) {
+                return iconFactory.fromResource(R.drawable.shil1);
+
+            }
+            else if (symbol.equals("2")) {
+                return iconFactory.fromResource(R.drawable.shil2);
+
+            }
+            else if (symbol.equals("3")) {
+                return iconFactory.fromResource(R.drawable.shil3);
+
+            }
+            else if (symbol.equals("4")) {
+                return iconFactory.fromResource(R.drawable.shil4);
+
+            }
+            else if (symbol.equals("5")) {
+                return iconFactory.fromResource(R.drawable.shil5);
+
+            }
+            else if (symbol.equals("6")) {
+                return iconFactory.fromResource(R.drawable.shil6);
+
+            }
+            else if (symbol.equals("7")) {
+                return iconFactory.fromResource(R.drawable.shil7);
+
+            }
+            else if (symbol.equals("8")) {
+                return iconFactory.fromResource(R.drawable.shil8);
+
+            }
+            else {
+                return iconFactory.fromResource(R.drawable.shil9);
+            }
+        }
+        else {
+            if (symbol.equals("0")) {
+                return iconFactory.fromResource(R.drawable.quid0);
+
+            }
+            else if (symbol.equals("1")) {
+                return iconFactory.fromResource(R.drawable.quid1);
+
+            }
+            else if (symbol.equals("2")) {
+                return iconFactory.fromResource(R.drawable.quid2);
+
+            }
+            else if (symbol.equals("3")) {
+                return iconFactory.fromResource(R.drawable.quid3);
+
+            }
+            else if (symbol.equals("4")) {
+                return iconFactory.fromResource(R.drawable.quid4);
+
+            }
+            else if (symbol.equals("5")) {
+                return iconFactory.fromResource(R.drawable.quid5);
+
+            }
+            else if (symbol.equals("6")) {
+                return iconFactory.fromResource(R.drawable.quid6);
+
+            }
+            else if (symbol.equals("7")) {
+                return iconFactory.fromResource(R.drawable.quid7);
+
+            }
+            else if (symbol.equals("8")) {
+                return iconFactory.fromResource(R.drawable.quid8);
+
+            }
+            else {
+                return iconFactory.fromResource(R.drawable.quid9);
+            }
+        }
     }
 
 }
