@@ -13,7 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainMenu">
+        <activity android:name=".SignIn">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,7 +22,12 @@
         </activity>
         <activity android:name=".MapScreen" />
         <activity android:name=".Settings" />
-        <activity android:name=".DepositCoins"></activity>
+        <activity android:name=".DepositCoins" />
+        <activity android:name=".MainMenu" />
+        <activity android:name=".Help" />
+        <activity android:name=".Help2" />
+        <activity android:name=".BankCoins" />
+        <activity android:name=".SendCoins"></activity>
     </application>
 
 </manifest>

@@ -14,6 +14,12 @@
         android:layout_alignParentTop="true"
         android:text="DEPOSIT COINS"
         android:onClick="goToDepositCoins"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="#8B0000"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -25,6 +31,11 @@
         android:layout_alignParentTop="true"
         android:text="MAIN MENU"
         android:onClick="goToMainMenu"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="#8B0000"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -45,7 +56,7 @@
             mapbox:mapbox_cameraTargetLat="55.944"
             mapbox:mapbox_cameraTargetLng="-3.188396"
             mapbox:mapbox_cameraZoom="15"
-            mapbox:mapbox_styleUrl="mapbox://styles/dmooney98/cjn6bp74307s42sllpfi49vqy" />
+            app:mapbox_styleUrl="@string/mapbox_style_mapbox_streets" />
 
     </RelativeLayout>
 

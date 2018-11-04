@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 
 public class Settings extends AppCompatActivity {
 
@@ -18,6 +19,48 @@ public class Settings extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+
+        SharedPreferences settings = getSharedPreferences("MyPrefsFile", Context.MODE_PRIVATE);
+        String backgroundPick = settings.getString("backgroundPick", "1");
+        ImageView image = (ImageView) findViewById(R.id.background);
+
+        if (backgroundPick.equals("1")) {
+            image.setImageResource(R.drawable.background1);
+        } else if (backgroundPick.equals("2")) {
+            image.setImageResource(R.drawable.background2);
+        } else if (backgroundPick.equals("3")) {
+            image.setImageResource(R.drawable.background3);
+        } else if (backgroundPick.equals("4")) {
+            image.setImageResource(R.drawable.background4);
+        } else if (backgroundPick.equals("5")) {
+            image.setImageResource(R.drawable.background5);
+        } else if (backgroundPick.equals("6")) {
+            image.setImageResource(R.drawable.background6);
+        }
+
+    }
+
+    public void onStart() {
+        super.onStart();
+
+        SharedPreferences settings = getSharedPreferences(preferencesFile, Context.MODE_PRIVATE);
+        String backgroundPick = settings.getString("backgroundPick", "1");
+        ImageView image = (ImageView) findViewById(R.id.background);
+
+        if (backgroundPick.equals("1")) {
+            image.setImageResource(R.drawable.background1);
+        } else if (backgroundPick.equals("2")) {
+            image.setImageResource(R.drawable.background2);
+        } else if (backgroundPick.equals("3")) {
+            image.setImageResource(R.drawable.background3);
+        } else if (backgroundPick.equals("4")) {
+            image.setImageResource(R.drawable.background4);
+        } else if (backgroundPick.equals("5")) {
+            image.setImageResource(R.drawable.background5);
+        } else if (backgroundPick.equals("6")) {
+            image.setImageResource(R.drawable.background6);
+        }
+
     }
 
     public void goToMainMenu(View view) {
@@ -56,6 +99,72 @@ public class Settings extends AppCompatActivity {
         editor.putString("latDifficulty", latDifficulty);
         editor.putString("lngDifficulty", lngDifficulty);
         editor.apply();
+    }
+
+    public void background1Select(View view) {
+        String choice = "1";
+        SharedPreferences settings = getSharedPreferences("MyPrefsFile",
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("backgroundPick", choice);
+        editor.apply();
+        ImageView image = (ImageView) findViewById(R.id.background);
+        image.setImageResource(R.drawable.background1);
+    }
+
+    public void background2Select(View view) {
+        String choice = "2";
+        SharedPreferences settings = getSharedPreferences("MyPrefsFile",
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("backgroundPick", choice);
+        editor.apply();
+        ImageView image = (ImageView) findViewById(R.id.background);
+        image.setImageResource(R.drawable.background2);
+    }
+
+    public void background3Select(View view) {
+        String choice = "3";
+        SharedPreferences settings = getSharedPreferences("MyPrefsFile",
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("backgroundPick", choice);
+        editor.apply();
+        ImageView image = (ImageView) findViewById(R.id.background);
+        image.setImageResource(R.drawable.background3);
+    }
+
+    public void background4Select(View view) {
+        String choice = "4";
+        SharedPreferences settings = getSharedPreferences("MyPrefsFile",
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("backgroundPick", choice);
+        editor.apply();
+        ImageView image = (ImageView) findViewById(R.id.background);
+        image.setImageResource(R.drawable.background4);
+    }
+
+    public void background5Select(View view) {
+        String choice = "5";
+        SharedPreferences settings = getSharedPreferences("MyPrefsFile",
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("backgroundPick", choice);
+        editor.apply();
+        ImageView image = (ImageView) findViewById(R.id.background);
+        image.setImageResource(R.drawable.background5);
+    }
+
+    public void background6Select(View view) {
+        String choice = "6";
+        SharedPreferences settings = getSharedPreferences("MyPrefsFile",
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("backgroundPick", choice);
+        editor.apply();
+        ImageView image = (ImageView) findViewById(R.id.background);
+        image.setImageResource(R.drawable.background6);
     }
 
 }

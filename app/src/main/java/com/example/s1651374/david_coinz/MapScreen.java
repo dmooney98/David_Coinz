@@ -15,6 +15,15 @@ import android.view.View;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.location.LocationEngineListener;
 import com.mapbox.android.core.location.LocationEnginePriority;
@@ -42,7 +51,12 @@ import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Nullable;
 
 public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, LocationEngineListener, PermissionsListener {
 
@@ -56,8 +70,13 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
     private String mapdataString;
     private FeatureCollection featureCollection;
     private List<Feature> features;
-    private Marker[] markers = new Marker[50];
-    private boolean[] removed = new boolean[50];
+    private HashMap<String, Marker> markers = new HashMap<>();
+    private HashMap<String, Coin> theCoins = new HashMap<>();
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private String userEmail;
+    private CollectionReference collRef;
+    private String user_choice = "@string/mapbox_style_mapbox_streets";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +92,9 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
 
         Bundle bundle = getIntent().getExtras();
         mapdataString = bundle.getString("mapdata");
+        mAuth = FirebaseAuth.getInstance();
+        userEmail = mAuth.getCurrentUser().getEmail();
+        collRef = db.collection("Users").document(userEmail).collection("Removed");
     }
 
     @Override
@@ -91,42 +113,37 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
             featureCollection = FeatureCollection.fromJson(mapdataString);
             features = featureCollection.features();
 
-
-            int i = 0;
-
             for (Feature f : features) {
                 if (f.geometry() instanceof Point) {
 
-                    Icon icon = determineMarker(f.properties().get("currency").getAsString(), f.properties().get("marker-symbol").getAsString());
-
-                    String title = f.properties().get("marker-symbol").getAsString();
+                    String id = f.properties().get("id").getAsString();
+                    Double value = f.properties().get("value").getAsDouble();
+                    //String title = f.properties().get("marker-symbol").getAsString();
                     String snippet = f.properties().get("currency").getAsString();
                     LatLng latLng = new LatLng(((Point) f.geometry()).latitude(), ((Point) f.geometry()).longitude());
+                    Icon icon = determineMarker(f.properties().get("currency").getAsString(), f.properties().get("marker-symbol").getAsString());
 
+                    collRef.document(id).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                        @Override
+                        public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                            if (documentSnapshot.exists()) {
+                                Toast.makeText(MapScreen.this, "EXISTING", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(MapScreen.this, "YA YEET YA", Toast.LENGTH_LONG).show();
+                                Marker current = map.addMarker(new MarkerOptions().position(latLng).title(id).snippet(snippet).icon(icon));
+                                Coin tempCoin = new Coin(id, snippet, value);
+                                theCoins.put(id, tempCoin);
+                                markers.put(id, current);
+                            }
+                        }
+                    });
 
-                    Marker current = map.addMarker(new MarkerOptions().position(latLng).title(title).snippet(snippet).icon(icon));
-                    markers[i] = current;
-                    i++;
-                    /*markers[i].title(title);
-                    markers[i].snippet(snippet);
-                    markers[i].icon(icon);
-                    markers[i].position(latLng);
-                    map.addMarker(markers[i]);
-                    i++;*/
+                        }
 
-                    /*map.addMarker(
-                            new MarkerOptions().position(new LatLng(
-                                    ((Point) f.geometry()).latitude(),
-                                    ((Point) f.geometry()).longitude()
-                            )).setTitle(f.properties().get("marker-symbol").getAsString())
-                            .setSnippet(f.properties().get("currency").getAsString())
-                            .icon(icon)
-                    );*/
                 }
             }
 
         }
-    }
 
     private void enableLocation() {
         if (PermissionsManager.areLocationPermissionsGranted(this)) {
@@ -199,23 +216,23 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
                 Context.MODE_PRIVATE);
         double lat = Double.parseDouble(settings.getString("latDifficulty", "0.0005"));
         double lng = Double.parseDouble(settings.getString("lngDifficulty", "0.0005"));
-        int i = 0;
-        for (Feature f : features) {
-            if (f.geometry() instanceof Point) {
-                if (removed[i] == false){
-                    if ((location.getLatitude() > (((Point) f.geometry()).latitude() - lat)) &&
-                            (location.getLatitude() < (((Point) f.geometry()).latitude() + lat)) &&
-                            (location.getLongitude() > (((Point) f.geometry()).longitude() - lng)) &&
-                            (location.getLongitude() < (((Point) f.geometry()).longitude() + lng))) {
-                        String currency = f.properties().get("currency").getAsString();
-                        String value = f.properties().get("marker-symbol").getAsString();
+        for (Marker m: map.getMarkers()) {
+                if ((location.getLatitude() > (m.getPosition().getLatitude() - lat)) &&
+                            (location.getLatitude() < (m.getPosition().getLatitude() + lat)) &&
+                            (location.getLongitude() > (m.getPosition().getLongitude() - lng)) &&
+                            (location.getLongitude() < (m.getPosition().getLongitude() + lng))) {
+                        String id = m.getTitle();
+                        Coin tempCoin = theCoins.get(id);
+                        String currency = tempCoin.getCurrency();
+                        String value = tempCoin.getValue().toString();
                         Toast.makeText(this, "You found " + value + " " + currency + "!", Toast.LENGTH_LONG).show();
-                        map.removeMarker(markers[i]);
-                        removed[i] = true;
-                    }
+                        map.removeMarker(markers.get(id));
+                        HashMap<String, Object> walletCoin = new HashMap<>();
+                        walletCoin.put("currency", theCoins.get(id).getCurrency());
+                        walletCoin.put("value", theCoins.get(id).getValue());
+                        db.collection("Users").document(userEmail).collection("Wallet").document(theCoins.get(id).getId()).set(walletCoin);
+                        db.collection("Users").document(userEmail).collection("Removed").document(theCoins.get(id).getId()).set(walletCoin);
                 }
-                i++;
-            }
         }
     }
 
