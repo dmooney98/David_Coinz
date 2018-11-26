@@ -81,7 +81,6 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:background="#F1C77E"
-        android:onClick="cashIn"
         android:text="BANK"
         android:textColor="#FFFFFF"
         android:textStyle="bold"
