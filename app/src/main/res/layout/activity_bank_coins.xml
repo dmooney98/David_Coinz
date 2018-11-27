@@ -157,7 +157,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.899" />
 
-    <TextView
+    <!--TextView
         android:id="@+id/goldCount"
         android:layout_width="180dp"
         android:layout_height="20dp"
@@ -172,6 +172,6 @@
         app:layout_constraintHorizontal_bias="0.967"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.0" /-->
 
 </android.support.constraint.ConstraintLayout>

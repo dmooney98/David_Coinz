@@ -80,6 +80,10 @@ public class DepositCoins extends AppCompatActivity {
 
     public void goToMapScreen(View view) {
         Intent intent = new Intent (this, MapScreen.class);
+        SharedPreferences settings = getSharedPreferences("MyPrefsFile",
+                Context.MODE_PRIVATE);
+        String mapdata = settings.getString("mapdata", "");
+        intent.putExtra("mapdata", mapdata);
         startActivity(intent);
     }
 

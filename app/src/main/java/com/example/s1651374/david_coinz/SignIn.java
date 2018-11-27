@@ -19,6 +19,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
 
 public class SignIn extends AppCompatActivity {
 
@@ -150,6 +153,9 @@ public class SignIn extends AppCompatActivity {
                             Log.d(tag, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             updateUI(user);
+                            HashMap<String, Double> goldField = new HashMap<>();
+                            goldField.put("Gold", 0.0);
+                            FirebaseFirestore.getInstance().collection("Users").document(mAuth.getCurrentUser().getEmail()).set(goldField);
                             goToMainMenu();
                         } else {
                             // If sign in fails, display a message to the user.
