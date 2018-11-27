@@ -171,6 +171,11 @@ public class MainMenu extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void goToManageFriends(View view) {
+        Intent intent = new Intent (this, ManageFriends.class);
+        startActivity(intent);
+    }
+
     public void goToHelp(View view) {
         Intent intent = new Intent (this, Help.class);
         startActivity(intent);

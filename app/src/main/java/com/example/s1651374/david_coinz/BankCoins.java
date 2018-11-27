@@ -58,7 +58,6 @@ public class BankCoins extends AppCompatActivity {
 
         currentUser = mAuth.getCurrentUser().getEmail();
 
-        Toast.makeText(BankCoins.this, "onCreate ran", Toast.LENGTH_SHORT).show();
 
     }
 
@@ -98,7 +97,6 @@ public class BankCoins extends AppCompatActivity {
 
         currentUser = mAuth.getCurrentUser().getEmail();
         if(check == 0) {
-            //Toast.makeText(this, "breached the walls boys", Toast.LENGTH_SHORT).show();
             listView = (ListView) findViewById(R.id.coinList);
             firebaseFirestore.collection("Users").document(currentUser).collection("Wallet").addSnapshotListener(new EventListener<QuerySnapshot>() {
                 @Override
@@ -109,6 +107,12 @@ public class BankCoins extends AppCompatActivity {
                         Coin myCoin = new Coin(queryDocumentSnapshots.getDocuments().get(i).getId(), queryDocumentSnapshots.getDocuments().get(i).get("currency").toString(), Double.parseDouble(queryDocumentSnapshots.getDocuments().get(i).get("value").toString()));
                         coinMap.put(coin, myCoin);
                     }
+
+                    if(coins.size() == 0) {
+                        TextView coinHelp = (TextView) findViewById(R.id.coinHelp);
+                        coinHelp.setText("You haven't got any coins in your wallet at the moment.  Get out there and collect some more!");
+                    }
+
                     HashSet<String> coinSet = new HashSet<String>();
                     coinSet.addAll(coins);
                     coins.clear();
@@ -122,6 +126,7 @@ public class BankCoins extends AppCompatActivity {
             });
         }
 
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -134,14 +139,17 @@ public class BankCoins extends AppCompatActivity {
                 }
             }
         });
-        Toast.makeText(this, String.valueOf(coins.size()), Toast.LENGTH_SHORT).show();
         cashIn();
         check = 1;
     }
 
     public void cashIn() {
         double allGold = 0.0;
+        double prevGold = 0.0;
         boolean proceed = false;
+        double total = 0.0;
+        double profit = 0.0;
+        int sizeCount = selectedCoins.size();
         if (check != 0) {
             for (int i = 0; i < selectedCoins.size();) {
                 proceed = true;
@@ -161,13 +169,16 @@ public class BankCoins extends AppCompatActivity {
                 } else {
                     Toast.makeText(this, "Error", Toast.LENGTH_LONG).show();
                 }
+                total = total + toBank;
                 firebaseFirestore.collection("Users").document(currentUser).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
                     public void onEvent(@Nullable DocumentSnapshot documentSnapshots, @Nullable FirebaseFirestoreException e) {
                         currentGold = documentSnapshots.getDouble("Gold");
                     }
                 });
-                Toast.makeText(this, String.valueOf(currentGold), Toast.LENGTH_SHORT).show();
+                if (selectedCoins.size() == sizeCount) {
+                    prevGold = currentGold;
+                }
                 toBank = toBank + currentGold;
                 allGold = toBank;
                 HashMap<String, Double> toPut = new HashMap<>();
@@ -195,30 +206,24 @@ public class BankCoins extends AppCompatActivity {
             });
         }
 
-        if(check!=0 && proceed == true) {
+        if(check!=0 && proceed) {
+            profit = allGold - prevGold;
             Intent intent = new Intent (this, GoldInform.class);
             intent.putExtra("transactionType", "Standard");
             intent.putExtra("winLose", "Unused");
             intent.putExtra("allGold", allGold);
+            intent.putExtra("profit", profit);
             startActivity(intent);
         }
-
-        /*if(check != 0) {
-            Intent intent = new Intent (this, GoldInform.class);
-            intent.putExtra("selectedCoins", toSend);
-            intent.putExtra("transactionType", "Standard");
-            startActivity(intent);
-        }*/
-        /*for (int i = 0; i < selectedCoins.size(); i++) {
-            selectedCoins.remove(i);
-        }
-        Toast.makeText(this, selectedCoins.size() + "", Toast.LENGTH_LONG).show();*/
     }
 
     public void smallGamble(View view) {
         double allGold = 0.0;
+        double prevGold = 0.0;
         int spin = (int) Math.ceil(Math.random() * 100);
         boolean proceed = false;
+        double profit = 0.0;
+        int sizeCount = selectedCoins.size();
         for (int i = 0; i < selectedCoins.size();) {
             proceed = true;
             Coin currCoin = coinMap.get(selectedCoins.get(i));
@@ -243,6 +248,9 @@ public class BankCoins extends AppCompatActivity {
                     currentGold = documentSnapshots.getDouble("Gold");
                 }
             });
+            if (selectedCoins.size() == sizeCount) {
+                prevGold = currentGold;
+            }
             if (spin <= 45) {
                 toBank = (toBank * 2) + currentGold;
             }
@@ -266,7 +274,8 @@ public class BankCoins extends AppCompatActivity {
             firebaseFirestore.collection("Users").document(currentUser).collection("Wallet").document(currentId).delete();
         }
 
-        if (proceed == true) {
+        if (proceed) {
+            profit = allGold - prevGold;
             Intent intent = new Intent (this, GoldInform.class);
             intent.putExtra("transactionType", "SmallG");
             if (spin <= 45) {
@@ -276,6 +285,7 @@ public class BankCoins extends AppCompatActivity {
                 intent.putExtra("winLose", "Lose");
             }
             intent.putExtra("allGold", allGold);
+            intent.putExtra("profit", profit);
             startActivity(intent);
         }
 
@@ -283,8 +293,11 @@ public class BankCoins extends AppCompatActivity {
 
     public void bigGamble(View view) {
         double allGold = 0.0;
+        double prevGold = 0.0;
         int spin = (int) Math.ceil(Math.random() * 100);
         boolean proceed = false;
+        double profit = 0.0;
+        int sizeCount = selectedCoins.size();
         for (int i = 0; i < selectedCoins.size();) {
             proceed = true;
             Coin currCoin = coinMap.get(selectedCoins.get(i));
@@ -309,6 +322,9 @@ public class BankCoins extends AppCompatActivity {
                     currentGold = documentSnapshots.getDouble("Gold");
                 }
             });
+            if (selectedCoins.size() == sizeCount) {
+                prevGold = currentGold;
+            }
             if (spin <= 15) {
                 toBank = (toBank * 5) + currentGold;
             }
@@ -332,7 +348,8 @@ public class BankCoins extends AppCompatActivity {
             firebaseFirestore.collection("Users").document(currentUser).collection("Wallet").document(currentId).delete();
         }
 
-        if (proceed == true) {
+        if (proceed) {
+            profit = allGold - prevGold;
             Intent intent = new Intent (this, GoldInform.class);
             intent.putExtra("transactionType", "SmallG");
             if (spin <= 15) {
@@ -342,6 +359,7 @@ public class BankCoins extends AppCompatActivity {
                 intent.putExtra("winLose", "Lose");
             }
             intent.putExtra("allGold", allGold);
+            intent.putExtra("profit", profit);
             startActivity(intent);
         }
 

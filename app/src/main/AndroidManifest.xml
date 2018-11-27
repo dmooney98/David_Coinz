@@ -28,7 +28,9 @@
         <activity android:name=".Help2" />
         <activity android:name=".BankCoins" />
         <activity android:name=".SendCoins" />
-        <activity android:name=".GoldInform"></activity>
+        <activity android:name=".GoldInform" />
+        <activity android:name=".GoldInformF" />
+        <activity android:name=".ManageFriends"></activity>
     </application>
 
 </manifest>
