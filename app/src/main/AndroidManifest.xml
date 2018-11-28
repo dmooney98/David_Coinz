@@ -30,7 +30,10 @@
         <activity android:name=".SendCoins" />
         <activity android:name=".GoldInform" />
         <activity android:name=".GoldInformF" />
-        <activity android:name=".ManageFriends"></activity>
+        <activity android:name=".ManageFriends" />
+        <activity android:name=".RemoveInform" />
+        <activity android:name=".SpareChange" />
+        <activity android:name=".TransferInform"></activity>
     </application>
 
 </manifest>

@@ -97,4 +97,9 @@ public class DepositCoins extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void goToSpareChange(View view) {
+        Intent intent = new Intent(this, SpareChange.class);
+        startActivity(intent);
+    }
+
 }

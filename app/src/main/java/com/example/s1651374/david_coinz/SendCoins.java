@@ -65,7 +65,7 @@ public class SendCoins extends AppCompatActivity {
         String backgroundPick = settings.getString("backgroundPick", "1");
         ImageView image = (ImageView) findViewById(R.id.background);
 
-        sendCoinsButton = findViewById(R.id.button14);
+        sendCoinsButton = findViewById(R.id.sendCoinsButton);
         sendCoinsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -95,7 +95,7 @@ public class SendCoins extends AppCompatActivity {
 
         if(check == 0) {
             listViewC = (ListView) findViewById(R.id.coinList);
-            firebaseFirestore.collection("Users").document(currentUser).collection("Wallet").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            firebaseFirestore.collection("Users").document(currentUser).collection("Spare Change").addSnapshotListener(new EventListener<QuerySnapshot>() {
                 @Override
                 public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                     for (int i = 0; i < queryDocumentSnapshots.size(); i++) {
@@ -107,7 +107,7 @@ public class SendCoins extends AppCompatActivity {
 
                     if(coins.size() == 0) {
                         TextView coinHelp = (TextView) findViewById(R.id.coinHelp);
-                        coinHelp.setText("You haven't got any coins in your wallet at the moment.  Get out there and collect some more!");
+                        coinHelp.setText("You haven't got any coins in your Spare Change at the moment.  Go and add some from the 'My Spare Change' panel!");
                     }
 
                     HashSet<String> coinSet = new HashSet<String>();
@@ -166,7 +166,6 @@ public class SendCoins extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String temp = ((TextView) view).getText().toString();
                 selectedFriend = temp;
-                Toast.makeText(SendCoins.this, selectedFriend, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -209,6 +208,7 @@ public class SendCoins extends AppCompatActivity {
                 });
                 if (selectedCoins.size() == sizeCount) {
                     prevGold = friendGold;
+                    Toast.makeText(this, String.valueOf(prevGold), Toast.LENGTH_SHORT).show();
                 }
                 toBank = toBank + friendGold;
                 allGold = toBank;
@@ -225,7 +225,7 @@ public class SendCoins extends AppCompatActivity {
                 selectedCoins.remove(i);
 
                 firebaseFirestore.collection("Users").document(selectedFriend).set(toPut);
-                firebaseFirestore.collection("Users").document(currentUser).collection("Wallet").document(currentId).delete();
+                firebaseFirestore.collection("Users").document(currentUser).collection("Spare Change").document(currentId).delete();
             }
         }
         else {

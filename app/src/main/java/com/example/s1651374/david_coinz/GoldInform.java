@@ -28,7 +28,6 @@ public class GoldInform extends AppCompatActivity {
 
     private String transactionType;
     private String winLose;
-    private double total;
     private double allGold;
     private double profit;
 
@@ -81,7 +80,6 @@ public class GoldInform extends AppCompatActivity {
                 winLoseStandard.setText("YOU LOSE!");
             }
         }
-
 
     }
 

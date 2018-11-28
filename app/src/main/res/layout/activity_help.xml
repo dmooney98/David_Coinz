@@ -86,11 +86,12 @@
         android:layout_marginTop="8dp"
         android:text="The objective of the game is to collect as many coins as you can every day.  These coins can be traded in for gold, at the exchange rate of each of the four currencies:"
         android:textColor="#000000"
+        android:textSize="13sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.509"
         app:layout_constraintStart_toStartOf="@+id/background"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintHorizontal_bias="0.509"
         app:layout_constraintVertical_bias="0.234" />
 
     <ImageButton
@@ -247,6 +248,7 @@
         android:layout_marginTop="8dp"
         android:text="The number inside each icon represents the closest value of that coin, rounding down.  The exchange rates for the coins will change each day, so be sure to check in at the 'Deposit Coins' screen to see which coins are the highest value today!"
         android:textColor="#000000"
+        android:textSize="13sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.509"
@@ -262,14 +264,14 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="Note though, that you are only allowed to cash in 25 coins for yourself each day, despite 50 appearing on the map every morning.  However these extra coins are not useless - you can send them to your friends!  Send a coin to a friend via their email address, and it will be cashed into their bank upon arrival."
+        android:text="Note though, that you are only allowed to cash in 25 coins for yourself each day, despite 50 appearing on the map every morning.  However these extra coins are not useless - you can send them to your friends!  Transfer a coin into your Spare Change to be able to send it to a friend via their email address, and it will be cashed into their bank upon arrival.  Coins in your Wallet will be emptied out and lost at the end of each day, but coins in your Spare Change will not.  Watch out though, once a coin has been moved into your Spare Change it cannot be moved back to your Wallet!"
         android:textColor="#000000"
+        android:textSize="13sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.51"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.819" />
+        app:layout_constraintVertical_bias="0.848" />
 
     <Button
         android:id="@+id/button7"

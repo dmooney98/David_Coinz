@@ -101,10 +101,7 @@ public class SignIn extends AppCompatActivity {
     }
 
     public void updateUI(FirebaseUser theUser) {
-        if (theUser == null) {
-            Toast.makeText(SignIn.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
-        }
-        else {
+        if (theUser != null) {
             goToMainMenu();
         }
     }
@@ -160,6 +157,7 @@ public class SignIn extends AppCompatActivity {
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(tag, "createUserWithEmail:failure", task.getException());
+                            Toast.makeText(SignIn.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                             updateUI(null);
                         }
 
@@ -182,6 +180,7 @@ public class SignIn extends AppCompatActivity {
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(tag, "signInWithEmail:failure", task.getException());
+                            Toast.makeText(SignIn.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                             updateUI(null);
                         }
 
