@@ -6,7 +6,7 @@ public class Coin {
     private String currency;
     private Double value;
 
-    public Coin(String id, String currency, Double value) {
+    Coin(String id, String currency, Double value) {
         this.id = id;
         this.currency = currency;
         this.value = value;

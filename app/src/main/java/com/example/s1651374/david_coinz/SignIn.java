@@ -21,6 +21,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 
 public class SignIn extends AppCompatActivity {
@@ -133,7 +135,7 @@ public class SignIn extends AppCompatActivity {
             Toast.makeText(this, "Please enter a valid email address", Toast.LENGTH_LONG).show();
         } else if (TextUtils.isEmpty(mPasswordField.getText().toString())){
             mPasswordField.setError("Required");
-            Toast.makeText(this, "Please enter a password", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Please enter a valid password", Toast.LENGTH_LONG).show();
         }
         else {
             createAccount(mEmailField.getText().toString(), mPasswordField.getText().toString());
@@ -150,9 +152,13 @@ public class SignIn extends AppCompatActivity {
                             Log.d(tag, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             updateUI(user);
+                            HashMap<String, Object> banked = new HashMap<>();
                             HashMap<String, Double> goldField = new HashMap<>();
+                            banked.put("Banked", 0);
                             goldField.put("Gold", 0.0);
+                            String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
                             FirebaseFirestore.getInstance().collection("Users").document(mAuth.getCurrentUser().getEmail()).set(goldField);
+                            FirebaseFirestore.getInstance().collection("Users").document(mAuth.getCurrentUser().getEmail()).collection("Limitations").document(today).set(banked);
                             goToMainMenu();
                         } else {
                             // If sign in fails, display a message to the user.

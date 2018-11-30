@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 public class Settings extends AppCompatActivity {
 
@@ -77,6 +78,7 @@ public class Settings extends AppCompatActivity {
         editor.putString("latDifficulty", latDifficulty);
         editor.putString("lngDifficulty", lngDifficulty);
         editor.apply();
+        Toast.makeText(this, "Difficulty set to Easy", Toast.LENGTH_SHORT).show();
     }
 
     public void normalSelect(View view) {
@@ -88,6 +90,7 @@ public class Settings extends AppCompatActivity {
         editor.putString("latDifficulty", latDifficulty);
         editor.putString("lngDifficulty", lngDifficulty);
         editor.apply();
+        Toast.makeText(this, "Difficulty set to Normal", Toast.LENGTH_SHORT).show();
     }
 
     public void hardSelect(View view) {
@@ -99,6 +102,7 @@ public class Settings extends AppCompatActivity {
         editor.putString("latDifficulty", latDifficulty);
         editor.putString("lngDifficulty", lngDifficulty);
         editor.apply();
+        Toast.makeText(this, "Difficulty set to Hard", Toast.LENGTH_SHORT).show();
     }
 
     public void background1Select(View view) {

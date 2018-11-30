@@ -30,6 +30,8 @@ public class GoldInform extends AppCompatActivity {
     private String winLose;
     private double allGold;
     private double profit;
+    private Double goldPass;
+    private int bankPass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +64,8 @@ public class GoldInform extends AppCompatActivity {
         winLose = bundle.getString("winLose");
         allGold = bundle.getDouble("allGold");
         profit = bundle.getDouble("profit");
+        goldPass = bundle.getDouble("goldPass");
+        bankPass = bundle.getInt("bankPass");
 
         newTotal.setText(String.valueOf(df.format(allGold)));
         goldBanked.setText(String.valueOf(df.format(profit)));
@@ -85,6 +89,8 @@ public class GoldInform extends AppCompatActivity {
 
     public void goToBankCoins(View view) {
         Intent intent = new Intent (this, BankCoins.class);
+        intent.putExtra("goldPass", goldPass);
+        intent.putExtra("bankPass", bankPass);
         startActivity(intent);
     }
 

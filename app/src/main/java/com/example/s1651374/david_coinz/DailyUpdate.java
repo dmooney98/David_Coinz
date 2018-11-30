@@ -7,26 +7,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 
-import java.text.DecimalFormat;
-
-public class GoldInformF extends AppCompatActivity {
-
-    private double allGold;
-    private double profit;
-    private Double goldPass;
-    private int bankPass;
+public class DailyUpdate extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_gold_inform_f);
-
+        setContentView(R.layout.activity_daily_update);
         SharedPreferences settings = getSharedPreferences("MyPrefsFile", Context.MODE_PRIVATE);
-        TextView newTotal = (TextView) findViewById(R.id.newTotal);
-        TextView goldBanked = (TextView) findViewById(R.id.goldBanked);
-        DecimalFormat df = new DecimalFormat("#.###");
 
         ImageView image = (ImageView) findViewById(R.id.background);
         String backgroundPick = settings.getString("backgroundPick", "1");
@@ -43,22 +31,10 @@ public class GoldInformF extends AppCompatActivity {
         } else if (backgroundPick.equals("6")) {
             image.setImageResource(R.drawable.background6);
         }
-
-        Bundle bundle = getIntent().getExtras();
-        allGold = bundle.getDouble("allGold");
-        profit = bundle.getDouble("profit");
-        goldPass = bundle.getDouble("goldPass");
-        bankPass = bundle.getInt("bankPass");
-
-        newTotal.setText(String.valueOf(df.format(allGold)));
-        goldBanked.setText(String.valueOf(df.format(profit)));
     }
 
-    public void goToSendCoins(View view) {
-        Intent intent = new Intent (this, SendCoins.class);
-        intent.putExtra("goldPass", goldPass);
-        intent.putExtra("bankPass", bankPass);
+    public void goToMainMenu(View view) {
+        Intent intent = new Intent(this, MainMenu.class);
         startActivity(intent);
     }
-
 }

@@ -33,7 +33,8 @@
         <activity android:name=".ManageFriends" />
         <activity android:name=".RemoveInform" />
         <activity android:name=".SpareChange" />
-        <activity android:name=".TransferInform"></activity>
+        <activity android:name=".TransferInform" />
+        <activity android:name=".DailyUpdate"></activity>
     </application>
 
 </manifest>

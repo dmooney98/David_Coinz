@@ -12,6 +12,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
@@ -24,6 +27,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.location.LocationEngineListener;
 import com.mapbox.android.core.location.LocationEnginePriority;
@@ -51,8 +55,10 @@ import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -60,6 +66,8 @@ import javax.annotation.Nullable;
 
 public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, LocationEngineListener, PermissionsListener {
 
+    private FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+    private int coinCount;
     private String tag = "MapScreen";
     private MapView mapView;
     private MapboxMap map;
@@ -73,10 +81,13 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
     private HashMap<String, Marker> markers = new HashMap<>();
     private HashMap<String, Coin> theCoins = new HashMap<>();
     private FirebaseAuth mAuth;
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private String userEmail;
+    private String currentUser;
     private CollectionReference collRef;
     private String user_choice = "@string/mapbox_style_mapbox_streets";
+    private Double goldPass;
+    private int bankPass;
+    private DecimalFormat df = new DecimalFormat("#.###");
+    private TextView map_wallet_count;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,9 +103,29 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
 
         Bundle bundle = getIntent().getExtras();
         mapdataString = bundle.getString("mapdata");
+        goldPass = bundle.getDouble("goldPass");
+        bankPass = bundle.getInt("bankPass");
         mAuth = FirebaseAuth.getInstance();
-        userEmail = mAuth.getCurrentUser().getEmail();
-        collRef = db.collection("Users").document(userEmail).collection("Removed");
+        currentUser = mAuth.getCurrentUser().getEmail();
+        collRef = firebaseFirestore.collection("Users").document(currentUser).collection("Removed");
+
+        firebaseFirestore.collection("Users").document(currentUser).collection("Wallet").get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        coinCount = queryDocumentSnapshots.size();
+                        map_wallet_count = findViewById(R.id.map_wallet_count);
+                        map_wallet_count.setText(String.valueOf(coinCount));
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(MapScreen.this, "Failed to establish connection to DataBase, please try again.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+
     }
 
     @Override
@@ -123,27 +154,29 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
                     LatLng latLng = new LatLng(((Point) f.geometry()).latitude(), ((Point) f.geometry()).longitude());
                     Icon icon = determineMarker(f.properties().get("currency").getAsString(), f.properties().get("marker-symbol").getAsString());
 
-                    collRef.document(id).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                        @Override
-                        public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                            if (documentSnapshot.exists()) {
-                                Toast.makeText(MapScreen.this, "EXISTING", Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(MapScreen.this, "YA YEET YA", Toast.LENGTH_LONG).show();
-                                Marker current = map.addMarker(new MarkerOptions().position(latLng).title(id).snippet(snippet).icon(icon));
-                                Coin tempCoin = new Coin(id, snippet, value);
-                                theCoins.put(id, tempCoin);
-                                markers.put(id, current);
-                            }
+                    collRef.document(id).get()
+                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                @Override
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    if(!documentSnapshot.exists()) {
+                                        Marker current = map.addMarker(new MarkerOptions().position(latLng).title(id).snippet(snippet).icon(icon));
+                                        Coin tempCoin = new Coin(id, snippet, value);
+                                        theCoins.put(id, tempCoin);
+                                        markers.put(id, current);
+                                    }
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(MapScreen.this, "Failed to establish connection to DataBase, please try again.", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                         }
-                    });
-
-                        }
-
                 }
             }
 
-        }
+    }
 
     private void enableLocation() {
         if (PermissionsManager.areLocationPermissionsGranted(this)) {
@@ -224,14 +257,16 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
                         String id = m.getTitle();
                         Coin tempCoin = theCoins.get(id);
                         String currency = tempCoin.getCurrency();
-                        String value = tempCoin.getValue().toString();
-                        Toast.makeText(this, "You found " + value + " " + currency + "!", Toast.LENGTH_LONG).show();
+                        Double value = tempCoin.getValue();
+                        Toast.makeText(this, "You found " + df.format(value) + " " + currency + "!", Toast.LENGTH_LONG).show();
                         map.removeMarker(markers.get(id));
                         HashMap<String, Object> walletCoin = new HashMap<>();
                         walletCoin.put("currency", theCoins.get(id).getCurrency());
                         walletCoin.put("value", theCoins.get(id).getValue());
-                        db.collection("Users").document(userEmail).collection("Wallet").document(theCoins.get(id).getId()).set(walletCoin);
-                        db.collection("Users").document(userEmail).collection("Removed").document(theCoins.get(id).getId()).set(walletCoin);
+                        firebaseFirestore.collection("Users").document(currentUser).collection("Wallet").document(theCoins.get(id).getId()).set(walletCoin);
+                        firebaseFirestore.collection("Users").document(currentUser).collection("Removed").document(theCoins.get(id).getId()).set(walletCoin);
+                        coinCount++;
+                        map_wallet_count.setText(String.valueOf(coinCount));
                 }
         }
     }
@@ -330,6 +365,8 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
 
     public void goToDepositCoins(View view) {
         Intent intent = new Intent (this, DepositCoins.class);
+        intent.putExtra("goldPass", goldPass);
+        intent.putExtra("bankPass", bankPass);
         startActivity(intent);
     }
 

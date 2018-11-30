@@ -12,6 +12,8 @@ import android.widget.TextView;
 public class TransferInform extends AppCompatActivity {
 
     private int coinCount;
+    private Double goldPass;
+    private int bankPass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,6 +21,8 @@ public class TransferInform extends AppCompatActivity {
         setContentView(R.layout.activity_transfer_inform);
         SharedPreferences settings = getSharedPreferences("MyPrefsFile", Context.MODE_PRIVATE);
         TextView transferText = (TextView) findViewById(R.id.tranferText);
+
+
 
         ImageView image = (ImageView) findViewById(R.id.background);
         String backgroundPick = settings.getString("backgroundPick", "1");
@@ -37,12 +41,21 @@ public class TransferInform extends AppCompatActivity {
         }
 
         Bundle bundle = getIntent().getExtras();
+        goldPass = bundle.getDouble("goldPass");
+        bankPass = bundle.getInt("bankPass");
         coinCount = bundle.getInt("coinCount");
-        transferText.setText("Successfully transferred " + coinCount + " coins to Spare Change.");
+        if(coinCount == 1) {
+            transferText.setText("Successfully transferred " + coinCount + " coin to Spare Change.");
+        }
+        else {
+            transferText.setText("Successfully transferred " + coinCount + " coins to Spare Change.");
+        }
     }
 
     public void goToSpareChange(View view) {
         Intent intent = new Intent(this, SpareChange.class);
+        intent.putExtra("goldPass", goldPass);
+        intent.putExtra("bankPass", bankPass);
         startActivity(intent);
     }
 }

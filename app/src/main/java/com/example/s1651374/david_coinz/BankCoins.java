@@ -3,6 +3,7 @@ package com.example.s1651374.david_coinz;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -14,30 +15,26 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.lang.reflect.Array;
-import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-
-import javax.annotation.Nullable;
 
 
 public class BankCoins extends AppCompatActivity {
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-    private ArrayList<String> coins = new ArrayList<String>();
-    private ArrayList<String> selectedCoins = new ArrayList<String>();
+    private ArrayList<String> coins = new ArrayList<>();
+    private ArrayList<String> selectedCoins = new ArrayList<>();
     private HashMap<String, Coin> coinMap= new HashMap<>();
     private ListView listView;
     private String currentUser;
@@ -46,18 +43,23 @@ public class BankCoins extends AppCompatActivity {
     private double quid;
     private double shil;
     private double currentGold;
-    private double toBank;
+    private int banked;
+    private double calc;
     private int check = 0;
     private Button cashInButton;
     private ArrayAdapter arrayAdapter;
+    private String today;
+    private Double goldPass;
+    private int bankPass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bank_coins);
 
-        currentUser = mAuth.getCurrentUser().getEmail();
-
+        if(mAuth.getCurrentUser() != null) {
+            currentUser = mAuth.getCurrentUser().getEmail();
+        }
 
     }
 
@@ -67,6 +69,11 @@ public class BankCoins extends AppCompatActivity {
         SharedPreferences settings = getSharedPreferences("MyPrefsFile", Context.MODE_PRIVATE);
         String backgroundPick = settings.getString("backgroundPick", "1");
         ImageView image = (ImageView) findViewById(R.id.background);
+        today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        Bundle bundle = getIntent().getExtras();
+        goldPass = bundle.getDouble("goldPass");
+        bankPass = bundle.getInt("bankPass");
 
         cashInButton = findViewById(R.id.button10);
         cashInButton.setOnClickListener(new View.OnClickListener() {
@@ -96,11 +103,13 @@ public class BankCoins extends AppCompatActivity {
         shil = Double.parseDouble(settings.getString("shil", ""));
 
         currentUser = mAuth.getCurrentUser().getEmail();
+
         if(check == 0) {
             listView = (ListView) findViewById(R.id.coinList);
-            firebaseFirestore.collection("Users").document(currentUser).collection("Wallet").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            firebaseFirestore.collection("Users").document(currentUser).collection("Wallet").get()
+                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
-                public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                     for (int i = 0; i < queryDocumentSnapshots.size(); i++) {
                         String coin = queryDocumentSnapshots.getDocuments().get(i).get("currency").toString() + " " + queryDocumentSnapshots.getDocuments().get(i).get("value").toString();
                         coins.add(coin);
@@ -123,6 +132,12 @@ public class BankCoins extends AppCompatActivity {
 
                     listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
                 }
+            })
+                    .addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(BankCoins.this, "Failed to establish connection to DataBase, please try again.", Toast.LENGTH_SHORT).show();
+                }
             });
         }
 
@@ -144,45 +159,273 @@ public class BankCoins extends AppCompatActivity {
     }
 
     public void cashIn() {
-        double allGold = 0.0;
         double prevGold = 0.0;
         boolean proceed = false;
         double total = 0.0;
-        double profit = 0.0;
+        double profit;
         int sizeCount = selectedCoins.size();
         if (check != 0) {
+            firebaseFirestore.collection("Users").document(currentUser).collection("Limitations").get()
+                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                        @Override
+                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                            if(queryDocumentSnapshots.getDocuments().get(0).getId().equals(today)) {
+                                banked = Integer.parseInt(queryDocumentSnapshots.getDocuments().get(0).get("Banked").toString());
+                            }
+                            else {
+                                HashMap<String, Integer> myUpdate = new HashMap<String, Integer>();
+                                myUpdate.put("Banked", 0);
+                                firebaseFirestore.collection("Users").document(currentUser).collection("Limitations").document(queryDocumentSnapshots.getDocuments().get(0).getId()).delete();
+                                firebaseFirestore.collection("Users").document(currentUser).collection("Limitations").document(today).set(myUpdate);
+                                for(int i = 0; i < coinMap.size(); i++) {
+                                    String key = coins.get(i);
+                                    String id = coinMap.get(key).getId();
+                                    String currency = coinMap.get(key).getCurrency();
+                                    Double value = coinMap.get(key).getValue();
+                                    HashMap<String, Object> toPut = new HashMap<>();
+                                    toPut.put("currency", currency);
+                                    toPut.put("value", value);
+                                    firebaseFirestore.collection("Users").document(currentUser).collection("Spare Change").document(id).set(toPut);
+                                    firebaseFirestore.collection("Users").document(currentUser).collection("Wallet").document(id).delete();
+                                }
+                                Intent intent = new Intent(BankCoins.this, DailyUpdate.class);
+                                startActivity(intent);
+                            }
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(BankCoins.this, "Failed to retrieve DataBase info, please try again", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+            if (banked == 25) {
+                Toast.makeText(this, "You have already banked 25 coins today!", Toast.LENGTH_SHORT).show();
+            }
+            else if ((banked + selectedCoins.size() > 25)) {
+                Toast.makeText(this, "You can only bank 25 coins per day, please select less!", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                for (int i = 0; i < selectedCoins.size();) {
+                    proceed = true;
+                    Coin currCoin = coinMap.get(selectedCoins.get(i));
+                    String currentCurrency = currCoin.getCurrency();
+                    Double currentValue = currCoin.getValue();
+                    String currentId = currCoin.getId();
+                    calc = 0.0;
+                    if (currentCurrency.equals("DOLR")) {
+                        calc = currentValue * dolr;
+                    } else if (currentCurrency.equals("PENY")) {
+                        calc = currentValue * peny;
+                    } else if (currentCurrency.equals("QUID")) {
+                        calc = currentValue * quid;
+                    } else if (currentCurrency.equals("SHIL")) {
+                        calc = currentValue * shil;
+                    } else {
+                        Toast.makeText(this, "Error", Toast.LENGTH_LONG).show();
+                    }
+                    total = total + calc;
+
+                    firebaseFirestore.collection("Users").document(currentUser).get()
+                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                @Override
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    currentGold = documentSnapshot.getDouble("Gold");
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(BankCoins.this, "Failed to retrieve DataBase info, please try again.", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                    if (selectedCoins.size() == sizeCount) {
+                        prevGold = currentGold;
+                        total = total + currentGold;
+                    }
+
+                    for(int j = 0; j < coins.size(); j++) {
+                        if (selectedCoins.get(i).equals(coins.get(j))) {
+                            coins.remove(j);
+                        }
+                    }
+
+                    coinMap.remove(selectedCoins.get(i));
+                    selectedCoins.remove(i);
+
+
+                    firebaseFirestore.collection("Users").document(currentUser).collection("Wallet").document(currentId).delete();
+                    banked = banked + 1;
+                    HashMap<String, Integer> myUpdate = new HashMap<String, Integer>();
+                    myUpdate.put("Banked", banked);
+                    firebaseFirestore.collection("Users").document(currentUser).collection("Limitations").document().delete();
+                    firebaseFirestore.collection("Users").document(currentUser).collection("Limitations").document(today).set(myUpdate);
+
+                }
+                HashMap<String, Double> toPut = new HashMap<>();
+                toPut.put("Gold", total);
+                firebaseFirestore.collection("Users").document(currentUser).set(toPut);
+            }
+        }
+        else {
+            firebaseFirestore.collection("Users").document(currentUser).get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            currentGold = documentSnapshot.getDouble("Gold");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(BankCoins.this, "Failed to retrieve DataBase info, please try again.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+            firebaseFirestore.collection("Users").document(currentUser).collection("Limitations").get()
+                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                        @Override
+                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                            if(queryDocumentSnapshots.getDocuments().get(0).getId().equals(today)) {
+                                banked = Integer.parseInt(queryDocumentSnapshots.getDocuments().get(0).get("Banked").toString());
+                            }
+                            else {
+                                HashMap<String, Integer> myUpdate = new HashMap<String, Integer>();
+                                myUpdate.put("Banked", 0);
+                                firebaseFirestore.collection("Users").document(currentUser).collection("Limitations").document(queryDocumentSnapshots.getDocuments().get(0).getId()).delete();
+                                firebaseFirestore.collection("Users").document(currentUser).collection("Limitations").document(today).set(myUpdate);
+                                for(int i = 0; i < coinMap.size(); i++) {
+                                    String key = coins.get(i);
+                                    String id = coinMap.get(key).getId();
+                                    String currency = coinMap.get(key).getCurrency();
+                                    Double value = coinMap.get(key).getValue();
+                                    HashMap<String, Object> toPut = new HashMap<>();
+                                    toPut.put("currency", currency);
+                                    toPut.put("value", value);
+                                    firebaseFirestore.collection("Users").document(currentUser).collection("Spare Change").document(id).set(toPut);
+                                    firebaseFirestore.collection("Users").document(currentUser).collection("Wallet").document(id).delete();
+                                }
+                                Intent intent = new Intent(BankCoins.this, DailyUpdate.class);
+                                startActivity(intent);
+                            }
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(BankCoins.this, "Failed to retrieve DataBase info, please try again", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+
+        if(check!=0 && proceed) {
+            goldPass = total;
+            bankPass = banked;
+            profit = total - prevGold;
+            Intent intent = new Intent (this, GoldInform.class);
+            intent.putExtra("goldPass", goldPass);
+            intent.putExtra("bankPass", bankPass);
+            intent.putExtra("transactionType", "Standard");
+            intent.putExtra("winLose", "Unused");
+            intent.putExtra("allGold", total);
+            intent.putExtra("profit", profit);
+            startActivity(intent);
+        }
+    }
+
+    public void smallGamble(View view) {
+        double prevGold = 0.0;
+        int spin = (int) Math.ceil(Math.random() * 100);
+        boolean proceed = false;
+        double total = 0.0;
+        double profit;
+        int sizeCount = selectedCoins.size();
+        firebaseFirestore.collection("Users").document(currentUser).collection("Limitations").get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        if(queryDocumentSnapshots.getDocuments().get(0).getId().equals(today)) {
+                            banked = Integer.parseInt(queryDocumentSnapshots.getDocuments().get(0).get("Banked").toString());
+                        }
+                        else {
+                            HashMap<String, Integer> myUpdate = new HashMap<String, Integer>();
+                            myUpdate.put("Banked", 0);
+                            firebaseFirestore.collection("Users").document(currentUser).collection("Limitations").document(queryDocumentSnapshots.getDocuments().get(0).getId()).delete();
+                            firebaseFirestore.collection("Users").document(currentUser).collection("Limitations").document(today).set(myUpdate);
+                            for(int i = 0; i < coinMap.size(); i++) {
+                                String key = coins.get(i);
+                                String id = coinMap.get(key).getId();
+                                String currency = coinMap.get(key).getCurrency();
+                                Double value = coinMap.get(key).getValue();
+                                HashMap<String, Object> toPut = new HashMap<>();
+                                toPut.put("currency", currency);
+                                toPut.put("value", value);
+                                firebaseFirestore.collection("Users").document(currentUser).collection("Spare Change").document(id).set(toPut);
+                                firebaseFirestore.collection("Users").document(currentUser).collection("Wallet").document(id).delete();
+                            }
+                            Intent intent = new Intent(BankCoins.this, DailyUpdate.class);
+                            startActivity(intent);
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(BankCoins.this, "Failed to retrieve DataBase info, please try again", Toast.LENGTH_SHORT).show();
+                    }
+                });
+        if (banked == 25) {
+            Toast.makeText(this, "You have already banked 25 coins today!", Toast.LENGTH_SHORT).show();
+        }
+        else if ((banked + selectedCoins.size() > 25)) {
+            Toast.makeText(this, "You can only bank 25 coins per day, please select less!", Toast.LENGTH_SHORT).show();
+        }
+        else {
             for (int i = 0; i < selectedCoins.size();) {
                 proceed = true;
                 Coin currCoin = coinMap.get(selectedCoins.get(i));
                 String currentCurrency = currCoin.getCurrency();
                 Double currentValue = currCoin.getValue();
                 String currentId = currCoin.getId();
-                toBank = 0.0;
+                calc = 0.0;
                 if (currentCurrency.equals("DOLR")) {
-                    toBank = currentValue * dolr;
+                    calc = currentValue * dolr;
                 } else if (currentCurrency.equals("PENY")) {
-                    toBank = currentValue * peny;
+                    calc = currentValue * peny;
                 } else if (currentCurrency.equals("QUID")) {
-                    toBank = currentValue * quid;
+                    calc = currentValue * quid;
                 } else if (currentCurrency.equals("SHIL")) {
-                    toBank = currentValue * shil;
+                    calc = currentValue * shil;
                 } else {
                     Toast.makeText(this, "Error", Toast.LENGTH_LONG).show();
                 }
-                total = total + toBank;
-                firebaseFirestore.collection("Users").document(currentUser).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable DocumentSnapshot documentSnapshots, @Nullable FirebaseFirestoreException e) {
-                        currentGold = documentSnapshots.getDouble("Gold");
-                    }
-                });
+                if (spin <= 45) {
+                    calc = (calc * 2);
+                }
+                else {
+                    calc = (calc * 0.5);
+                }
+                total = total + calc;
+                firebaseFirestore.collection("Users").document(currentUser).get()
+                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                currentGold = documentSnapshot.getDouble("Gold");
+
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(BankCoins.this, "Failed to retrieve DataBase info, please try again.", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
                 if (selectedCoins.size() == sizeCount) {
                     prevGold = currentGold;
+                    total = total + currentGold;
                 }
-                toBank = toBank + currentGold;
-                allGold = toBank;
-                HashMap<String, Double> toPut = new HashMap<>();
-                toPut.put("Gold", toBank);
+
+
 
                 for(int j = 0; j < coins.size(); j++) {
                     if (selectedCoins.get(i).equals(coins.get(j))) {
@@ -193,90 +436,25 @@ public class BankCoins extends AppCompatActivity {
                 coinMap.remove(selectedCoins.get(i));
                 selectedCoins.remove(i);
 
-                firebaseFirestore.collection("Users").document(currentUser).set(toPut);
                 firebaseFirestore.collection("Users").document(currentUser).collection("Wallet").document(currentId).delete();
+                banked = banked + 1;
+                HashMap<String, Integer> myUpdate = new HashMap<String, Integer>();
+                myUpdate.put("Banked", banked);
+                firebaseFirestore.collection("Users").document(currentUser).collection("Limitations").document().delete();
+                firebaseFirestore.collection("Users").document(currentUser).collection("Limitations").document(today).set(myUpdate);
             }
-        }
-        else {
-            firebaseFirestore.collection("Users").document(currentUser).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                @Override
-                public void onEvent(@Nullable DocumentSnapshot documentSnapshots, @Nullable FirebaseFirestoreException e) {
-                    currentGold = documentSnapshots.getDouble("Gold");
-                    }
-            });
-        }
-
-        if(check!=0 && proceed) {
-            profit = allGold - prevGold;
-            Intent intent = new Intent (this, GoldInform.class);
-            intent.putExtra("transactionType", "Standard");
-            intent.putExtra("winLose", "Unused");
-            intent.putExtra("allGold", allGold);
-            intent.putExtra("profit", profit);
-            startActivity(intent);
-        }
-    }
-
-    public void smallGamble(View view) {
-        double allGold = 0.0;
-        double prevGold = 0.0;
-        int spin = (int) Math.ceil(Math.random() * 100);
-        boolean proceed = false;
-        double profit = 0.0;
-        int sizeCount = selectedCoins.size();
-        for (int i = 0; i < selectedCoins.size();) {
-            proceed = true;
-            Coin currCoin = coinMap.get(selectedCoins.get(i));
-            String currentCurrency = currCoin.getCurrency();
-            Double currentValue = currCoin.getValue();
-            String currentId = currCoin.getId();
-            toBank = 0.0;
-            if (currentCurrency.equals("DOLR")) {
-                toBank = currentValue * dolr;
-            } else if (currentCurrency.equals("PENY")) {
-                toBank = currentValue * peny;
-            } else if (currentCurrency.equals("QUID")) {
-                toBank = currentValue * quid;
-            } else if (currentCurrency.equals("SHIL")) {
-                toBank = currentValue * shil;
-            } else {
-                Toast.makeText(this, "Error", Toast.LENGTH_LONG).show();
-            }
-            firebaseFirestore.collection("Users").document(currentUser).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                @Override
-                public void onEvent(@Nullable DocumentSnapshot documentSnapshots, @Nullable FirebaseFirestoreException e) {
-                    currentGold = documentSnapshots.getDouble("Gold");
-                }
-            });
-            if (selectedCoins.size() == sizeCount) {
-                prevGold = currentGold;
-            }
-            if (spin <= 45) {
-                toBank = (toBank * 2) + currentGold;
-            }
-            else {
-                toBank = (toBank * 0.5) + currentGold;
-            }
-            allGold = toBank;
             HashMap<String, Double> toPut = new HashMap<>();
-            toPut.put("Gold", toBank);
-
-            for(int j = 0; j < coins.size(); j++) {
-                if (selectedCoins.get(i).equals(coins.get(j))) {
-                    coins.remove(j);
-                }
-            }
-
-            coinMap.remove(selectedCoins.get(i));
-            selectedCoins.remove(i);
-
+            toPut.put("Gold", total);
             firebaseFirestore.collection("Users").document(currentUser).set(toPut);
-            firebaseFirestore.collection("Users").document(currentUser).collection("Wallet").document(currentId).delete();
         }
 
         if (proceed) {
-            profit = allGold - prevGold;
+            goldPass = total;
+            bankPass = banked;
+            profit = total - prevGold;
             Intent intent = new Intent (this, GoldInform.class);
+            intent.putExtra("goldPass", goldPass);
+            intent.putExtra("bankPass", bankPass);
             intent.putExtra("transactionType", "SmallG");
             if (spin <= 45) {
                 intent.putExtra("winLose", "Win");
@@ -284,7 +462,7 @@ public class BankCoins extends AppCompatActivity {
             else {
                 intent.putExtra("winLose", "Lose");
             }
-            intent.putExtra("allGold", allGold);
+            intent.putExtra("allGold", total);
             intent.putExtra("profit", profit);
             startActivity(intent);
         }
@@ -292,65 +470,126 @@ public class BankCoins extends AppCompatActivity {
     }
 
     public void bigGamble(View view) {
-        double allGold = 0.0;
         double prevGold = 0.0;
         int spin = (int) Math.ceil(Math.random() * 100);
         boolean proceed = false;
-        double profit = 0.0;
+        double total = 0.0;
+        double profit;
         int sizeCount = selectedCoins.size();
-        for (int i = 0; i < selectedCoins.size();) {
-            proceed = true;
-            Coin currCoin = coinMap.get(selectedCoins.get(i));
-            String currentCurrency = currCoin.getCurrency();
-            Double currentValue = currCoin.getValue();
-            String currentId = currCoin.getId();
-            toBank = 0.0;
-            if (currentCurrency.equals("DOLR")) {
-                toBank = currentValue * dolr;
-            } else if (currentCurrency.equals("PENY")) {
-                toBank = currentValue * peny;
-            } else if (currentCurrency.equals("QUID")) {
-                toBank = currentValue * quid;
-            } else if (currentCurrency.equals("SHIL")) {
-                toBank = currentValue * shil;
-            } else {
-                Toast.makeText(this, "Error", Toast.LENGTH_LONG).show();
-            }
-            firebaseFirestore.collection("Users").document(currentUser).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                @Override
-                public void onEvent(@Nullable DocumentSnapshot documentSnapshots, @Nullable FirebaseFirestoreException e) {
-                    currentGold = documentSnapshots.getDouble("Gold");
+        firebaseFirestore.collection("Users").document(currentUser).collection("Limitations").get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        if(queryDocumentSnapshots.getDocuments().get(0).getId().equals(today)) {
+                            banked = Integer.parseInt(queryDocumentSnapshots.getDocuments().get(0).get("Banked").toString());
+                        }
+                        else {
+                            HashMap<String, Integer> myUpdate = new HashMap<String, Integer>();
+                            myUpdate.put("Banked", 0);
+                            firebaseFirestore.collection("Users").document(currentUser).collection("Limitations").document(queryDocumentSnapshots.getDocuments().get(0).getId()).delete();
+                            firebaseFirestore.collection("Users").document(currentUser).collection("Limitations").document(today).set(myUpdate);
+                            for(int i = 0; i < coinMap.size(); i++) {
+                                String key = coins.get(i);
+                                String id = coinMap.get(key).getId();
+                                String currency = coinMap.get(key).getCurrency();
+                                Double value = coinMap.get(key).getValue();
+                                HashMap<String, Object> toPut = new HashMap<>();
+                                toPut.put("currency", currency);
+                                toPut.put("value", value);
+                                firebaseFirestore.collection("Users").document(currentUser).collection("Spare Change").document(id).set(toPut);
+                                firebaseFirestore.collection("Users").document(currentUser).collection("Wallet").document(id).delete();
+                            }
+                            Intent intent = new Intent(BankCoins.this, DailyUpdate.class);
+                            startActivity(intent);
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(BankCoins.this, "Failed to retrieve DataBase info, please try again", Toast.LENGTH_SHORT).show();
+                    }
+                });
+        if (banked == 25) {
+            Toast.makeText(this, "You have already banked 25 coins today!", Toast.LENGTH_SHORT).show();
+        }
+        else if ((banked + selectedCoins.size() > 25)) {
+            Toast.makeText(this, "You can only bank 25 coins per day, please select less!", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            for (int i = 0; i < selectedCoins.size();) {
+                proceed = true;
+                Coin currCoin = coinMap.get(selectedCoins.get(i));
+                String currentCurrency = currCoin.getCurrency();
+                Double currentValue = currCoin.getValue();
+                String currentId = currCoin.getId();
+                calc = 0.0;
+                if (currentCurrency.equals("DOLR")) {
+                    calc = currentValue * dolr;
+                } else if (currentCurrency.equals("PENY")) {
+                    calc = currentValue * peny;
+                } else if (currentCurrency.equals("QUID")) {
+                    calc = currentValue * quid;
+                } else if (currentCurrency.equals("SHIL")) {
+                    calc = currentValue * shil;
+                } else {
+                    Toast.makeText(this, "Error", Toast.LENGTH_LONG).show();
                 }
-            });
-            if (selectedCoins.size() == sizeCount) {
-                prevGold = currentGold;
+                if (spin <= 15) {
+                    calc = (calc * 5);
+                }
+                else {
+                    calc = (calc * 0.2);
+                }
+                total = total + calc;
+                firebaseFirestore.collection("Users").document(currentUser).get()
+                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                currentGold = documentSnapshot.getDouble("Gold");
+                            }
+
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(BankCoins.this, "Failed to retrieve DataBase info, please try again", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                if (selectedCoins.size() == sizeCount) {
+                    prevGold = currentGold;
+                    total = total + currentGold;
+                }
+
+                for(int j = 0; j < coins.size(); j++) {
+                    if (selectedCoins.get(i).equals(coins.get(j))) {
+                        coins.remove(j);
+                    }
+                }
+
+                coinMap.remove(selectedCoins.get(i));
+                selectedCoins.remove(i);
+
+                firebaseFirestore.collection("Users").document(currentUser).collection("Wallet").document(currentId).delete();
+                banked = banked + 1;
+                HashMap<String, Integer> myUpdate = new HashMap<String, Integer>();
+                myUpdate.put("Banked", banked);
+                firebaseFirestore.collection("Users").document(currentUser).collection("Limitations").document().delete();
+                firebaseFirestore.collection("Users").document(currentUser).collection("Limitations").document(today).set(myUpdate);
             }
-            if (spin <= 15) {
-                toBank = (toBank * 5) + currentGold;
-            }
-            else {
-                toBank = (toBank * 0.2) + currentGold;
-            }
-            allGold = toBank;
             HashMap<String, Double> toPut = new HashMap<>();
-            toPut.put("Gold", toBank);
-
-            for(int j = 0; j < coins.size(); j++) {
-                if (selectedCoins.get(i).equals(coins.get(j))) {
-                    coins.remove(j);
-                }
-            }
-
-            coinMap.remove(selectedCoins.get(i));
-            selectedCoins.remove(i);
-
+            toPut.put("Gold", total);
             firebaseFirestore.collection("Users").document(currentUser).set(toPut);
-            firebaseFirestore.collection("Users").document(currentUser).collection("Wallet").document(currentId).delete();
         }
 
         if (proceed) {
-            profit = allGold - prevGold;
+            goldPass = total;
+            bankPass = banked;
+            profit = total - prevGold;
             Intent intent = new Intent (this, GoldInform.class);
+            intent.putExtra("goldPass", goldPass);
+            intent.putExtra("bankPass", bankPass);
             intent.putExtra("transactionType", "SmallG");
             if (spin <= 15) {
                 intent.putExtra("winLose", "Win");
@@ -358,7 +597,7 @@ public class BankCoins extends AppCompatActivity {
             else {
                 intent.putExtra("winLose", "Lose");
             }
-            intent.putExtra("allGold", allGold);
+            intent.putExtra("allGold", total);
             intent.putExtra("profit", profit);
             startActivity(intent);
         }
@@ -367,6 +606,8 @@ public class BankCoins extends AppCompatActivity {
 
     public void goBack(View view) {
         Intent intent = new Intent(this, DepositCoins.class);
+        intent.putExtra("goldPass", goldPass);
+        intent.putExtra("bankPass", bankPass);
         startActivity(intent);
     }
 
