@@ -184,7 +184,7 @@
         app:layout_constraintVertical_bias="0.301" />
 
     <Button
-        android:id="@+id/button8"
+        android:id="@+id/dc_bank_coins"
         android:layout_width="100dp"
         android:layout_height="50dp"
         android:layout_marginBottom="8dp"
@@ -203,7 +203,7 @@
         app:layout_constraintVertical_bias="0.707" />
 
     <Button
-        android:id="@+id/button9"
+        android:id="@+id/DC_friend_button"
         android:layout_width="100dp"
         android:layout_height="50dp"
         android:layout_marginBottom="8dp"
@@ -222,7 +222,7 @@
         app:layout_constraintVertical_bias="0.807" />
 
     <Button
-        android:id="@+id/button14"
+        android:id="@+id/DC_spare_change_button"
         android:layout_width="100dp"
         android:layout_height="50dp"
         android:layout_marginBottom="8dp"

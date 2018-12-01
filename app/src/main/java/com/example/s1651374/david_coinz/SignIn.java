@@ -103,7 +103,10 @@ public class SignIn extends AppCompatActivity {
     }
 
     public void updateUI(FirebaseUser theUser) {
-        if (theUser != null) {
+        if (theUser == null) {
+            // Do not grant access to the MainMenu
+        }
+        else {
             goToMainMenu();
         }
     }

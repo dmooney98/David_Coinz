@@ -75,7 +75,7 @@ public class BankCoins extends AppCompatActivity {
         goldPass = bundle.getDouble("goldPass");
         bankPass = bundle.getInt("bankPass");
 
-        cashInButton = findViewById(R.id.button10);
+        cashInButton = findViewById(R.id.BC_bank_button);
         cashInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -105,7 +105,7 @@ public class BankCoins extends AppCompatActivity {
         currentUser = mAuth.getCurrentUser().getEmail();
 
         if(check == 0) {
-            listView = (ListView) findViewById(R.id.coinList);
+            listView = (ListView) findViewById(R.id.BC_coinList);
             firebaseFirestore.collection("Users").document(currentUser).collection("Wallet").get()
                     .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override

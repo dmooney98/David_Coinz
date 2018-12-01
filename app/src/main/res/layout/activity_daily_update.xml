@@ -20,7 +20,7 @@
         app:srcCompat="@drawable/background1" />
 
     <Button
-        android:id="@+id/ADU_okay_button"
+        android:id="@+id/DU_okay_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"

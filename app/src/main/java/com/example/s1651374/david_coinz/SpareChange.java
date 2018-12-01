@@ -93,7 +93,7 @@ public class SpareChange extends AppCompatActivity {
         }
 
         if(check == 0) {
-            listViewW = (ListView) findViewById(R.id.wallet);
+            listViewW = (ListView) findViewById(R.id.SC_wallet);
             firebaseFirestore.collection("Users").document(currentUser).collection("Wallet").get()
                     .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                         @Override

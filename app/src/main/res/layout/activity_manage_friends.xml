@@ -131,7 +131,7 @@
         app:layout_constraintVertical_bias="0.467" />
 
     <EditText
-        android:id="@+id/friendAdder"
+        android:id="@+id/friendAdderText"
         android:layout_width="268dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"

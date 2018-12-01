@@ -142,34 +142,6 @@ public class ManageFriends extends AppCompatActivity {
                             Toast.makeText(ManageFriends.this, "Failed to establish connection to DataBase, please try again.", Toast.LENGTH_SHORT).show();
                         }
                     });
-            /*
-            firebaseFirestore.collection("Users").document(currentUser).collection("Friends").addSnapshotListener(new EventListener<QuerySnapshot>() {
-                @Override
-                public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                    for (int i = 0; i < queryDocumentSnapshots.size(); i++) {
-                        String friend = queryDocumentSnapshots.getDocuments().get(i).getId() + " \nFriend since " + queryDocumentSnapshots.getDocuments().get(i).get("Date added").toString();
-                        friends.add(friend);
-                    }
-
-                    TextView friendHelp = (TextView) findViewById(R.id.MF_friendHelp);
-                    if(friends.size() == 0) {
-                        friendHelp.setText("You don't have any friends added yet.  Add some!");
-                    }
-                    else {
-                        friendHelp.setText("");
-                    }
-
-                    HashSet friendSet = new HashSet();
-                    friendSet.addAll(friends);
-                    friends.clear();
-                    friends.addAll(friendSet);
-
-                    arrayAdapterF = new ArrayAdapter(ManageFriends.this, R.layout.my_layout, R.id.row_layout, friends);
-                    listViewF.setAdapter(arrayAdapterF);
-
-                    listViewF.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-                }
-            });*/
         }
 
         if(check == 0) {
@@ -189,16 +161,6 @@ public class ManageFriends extends AppCompatActivity {
                             Toast.makeText(ManageFriends.this, "Failed to establish connection to DataBase, please try again.", Toast.LENGTH_SHORT).show();
                         }
                     });
-            /*
-            firebaseFirestore.collection("Users").addSnapshotListener(new EventListener<QuerySnapshot>() {
-                @Override
-                public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                    for (int i = 0; i < queryDocumentSnapshots.size(); i++) {
-                        String user = queryDocumentSnapshots.getDocuments().get(i).getId();
-                        users.add(user);
-                    }
-                }
-            });*/
         }
 
         listViewF.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -246,7 +208,7 @@ public class ManageFriends extends AppCompatActivity {
     }
 
     public void addFriend() {
-        EditText friendAdder = (EditText) findViewById(R.id.friendAdder);
+        EditText friendAdder = (EditText) findViewById(R.id.friendAdderText);
         String request = friendAdder.getText().toString();
         if(request.isEmpty()) {
             Toast.makeText(this, "Please enter a friend's email address to add them.", Toast.LENGTH_SHORT).show();
