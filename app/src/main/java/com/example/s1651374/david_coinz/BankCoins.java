@@ -178,7 +178,7 @@ public class BankCoins extends AppCompatActivity {
                     // Display text message to fill the empty space left when the user has no coins
                     // in their wallet
                     if(coins.size() == 0) {
-                        TextView coinHelp = (TextView) findViewById(R.id.coinHelp);
+                        TextView coinHelp = (TextView) findViewById(R.id.BC_coinHelp);
                         coinHelp.setText("You haven't got any coins in your wallet at the moment." +
                                 "  Get out there and collect some more!");
                     }

@@ -46,20 +46,48 @@ public class SendCoinsTest {
     @Rule
     public ActivityTestRule<SignIn> mActivityTestRule = new ActivityTestRule<>(SignIn.class);
 
+    //==============================================================================================
+    // -- IMPORTANT INFORMATION FOR MARKERS -- IMPORTANT INFORMATION FOR MARKERS --
+    // -- IMPORTANT INFORMATION FOR MARKERS -- IMPORTANT INFORMATION FOR MARKERS --
+    //
+    // This test will test the app's ability to transfer coins from the user's wallet to their spare
+    // change.  The test will then send this coin to a user which is already on the current user's
+    // friend list.  The test will then bank a coin via 'Standard', 'Small gamble', and 'Big gamble'
+    // banking.
+    //
+    // TO RUN THIS TEST:
+    //
+    // Run the app separately and ensure that it is currently logged out of any pre-signed in user.
+    // Do not run the same test twice in a row.  To run this test a second time, ensure one of the
+    // other tests have been ran after it, from the logged out state, and then ensure that the app
+    // is once again in a logged out state.  This is due to the other tests resetting the values
+    // needed in the database for this test to be ran twice, and the tests being unable to be ended
+    // on the SignIn activity.
+    //
+    // IF THESE INSTRUCTIONS ARE NOT FOLLOWED, THIS AND OTHER TESTS MAY BE RENDERED OBSOLETE, CRASH,
+    // AND BE UNABLE TO BE RE-RAN
     @Test
     public void sendCoinsTest() {
         //==========================================================================================
         // Reset values for ManageFriendsTest
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-        firebaseFirestore.collection("Users").document("managef@test.com").collection("Limitations").get()
+        firebaseFirestore.collection("Users").document("managef@test.com")
+                .collection("Limitations").get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot documentSnapshots) {
                         if(documentSnapshots.getDocuments().get(0).exists()) {
                             HashMap<String, Integer> myUpdate = new HashMap<>();
                             myUpdate.put("Banked", 0);
-                            firebaseFirestore.collection("Users").document("managef@test.com").collection("Limitations").document(documentSnapshots.getDocuments().get(0).getId()).delete();
-                            firebaseFirestore.collection("Users").document("managef@test.com").collection("Limitations").document("12123123").set(myUpdate);
+                            firebaseFirestore.collection("Users")
+                                    .document("managef@test.com")
+                                    .collection("Limitations")
+                                    .document(documentSnapshots.getDocuments()
+                                            .get(0).getId()).delete();
+                            firebaseFirestore.collection("Users")
+                                    .document("managef@test.com")
+                                    .collection("Limitations")
+                                    .document("12123123").set(myUpdate);
                         }
                     }
                 })
@@ -129,7 +157,8 @@ public class SendCoinsTest {
         DataInteraction spare_change_wallet = onData(anything())
                 .inAdapterView(allOf(withId(R.id.SC_wallet),
                         childAtPosition(
-                                withClassName(is("android.support.constraint.ConstraintLayout")),
+                                withClassName(is("android.support.constraint." +
+                                        "ConstraintLayout")),
                                 2)))
                 .atPosition(0);
 
@@ -163,14 +192,16 @@ public class SendCoinsTest {
         DataInteraction send_coins_coins = onData(anything())
                 .inAdapterView(allOf(withId(R.id.SendC_coinList),
                         childAtPosition(
-                                withClassName(is("android.support.constraint.ConstraintLayout")),
+                                withClassName(is("android.support.constraint." +
+                                        "ConstraintLayout")),
                                 2)))
                 .atPosition(0);
 
         DataInteraction send_coins_friends = onData(anything())
                 .inAdapterView(allOf(withId(R.id.SendC_friendList),
                         childAtPosition(
-                                withClassName(is("android.support.constraint.ConstraintLayout")),
+                                withClassName(is("android.support.constraint." +
+                                        "ConstraintLayout")),
                                 3)))
                 .atPosition(0);
 
@@ -222,7 +253,8 @@ public class SendCoinsTest {
         DataInteraction bc_coins = onData(anything())
                 .inAdapterView(allOf(withId(R.id.BC_coinList),
                         childAtPosition(
-                                withClassName(is("android.support.constraint.ConstraintLayout")),
+                                withClassName(is("android.support.constraint." +
+                                        "ConstraintLayout")),
                                 2)))
                 .atPosition(0);
 
@@ -337,7 +369,8 @@ public class SendCoinsTest {
                 walletCoin.put("currency", "DOLR");
                 walletCoin.put("value", spin);
             }
-            firebaseFirestore.collection("Users").document(currentUser).collection("Wallet").document(String.valueOf(i)).set(walletCoin);
+            firebaseFirestore.collection("Users").document(currentUser)
+                    .collection("Wallet").document(String.valueOf(i)).set(walletCoin);
         }
 
         try {
@@ -563,14 +596,19 @@ public class SendCoinsTest {
 
         //==========================================================================================
         // Reset values correctly so that this test can be run multiple times
-        firebaseFirestore.collection("Users").document(currentUser).collection("Limitations").get()
+        firebaseFirestore.collection("Users").document(currentUser)
+                .collection("Limitations").get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot documentSnapshots) {
                         HashMap<String, Integer> myUpdate = new HashMap<>();
                         myUpdate.put("Banked", 0);
-                        firebaseFirestore.collection("Users").document(currentUser).collection("Limitations").document(documentSnapshots.getDocuments().get(0).getId()).delete();
-                        firebaseFirestore.collection("Users").document(currentUser).collection("Limitations").document("12123123").set(myUpdate);
+                        firebaseFirestore.collection("Users").document(currentUser)
+                                .collection("Limitations").document(documentSnapshots
+                                .getDocuments().get(0).getId()).delete();
+                        firebaseFirestore.collection("Users").document(currentUser)
+                                .collection("Limitations")
+                                .document("12123123").set(myUpdate);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {

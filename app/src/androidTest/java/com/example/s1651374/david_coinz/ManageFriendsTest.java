@@ -48,20 +48,48 @@ public class ManageFriendsTest {
     @Rule
     public ActivityTestRule<SignIn> mActivityTestRule = new ActivityTestRule<>(SignIn.class);
 
+    //==============================================================================================
+    // -- IMPORTANT INFORMATION FOR MARKERS -- IMPORTANT INFORMATION FOR MARKERS --
+    // -- IMPORTANT INFORMATION FOR MARKERS -- IMPORTANT INFORMATION FOR MARKERS --
+    //
+    // This test will test the app's ability to sign in to a pre-created account, and add 3 friends
+    // which are other users pre-created on the database.  It will then remove these friends, then
+    // attempt to add a fake account, then attempt to add the email address of the user who is
+    // signed in.
+    //
+    // TO RUN THIS TEST:
+    //
+    // Run the app separately and ensure that it is currently logged out of any pre-signed in user.
+    // Do not run the same test twice in a row.  To run this test a second time, ensure one of the
+    // other tests have been ran after it, from the logged out state, and then ensure that the app
+    // is once again in a logged out state.  This is due to the other tests resetting the values
+    // needed in the database for this test to be ran twice, and the tests being unable to be ended
+    // on the SignIn activity.
+    //
+    // IF THESE INSTRUCTIONS ARE NOT FOLLOWED, THIS AND OTHER TESTS MAY BE RENDERED OBSOLETE, CRASH,
+    // AND BE UNABLE TO BE RE-RAN
     @Test
     public void manageFriendsTest() {
         //==========================================================================================
         // Reset values for SendCoinsTest
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-        firebaseFirestore.collection("Users").document("sendcoins@test.com").collection("Limitations").get()
+        firebaseFirestore.collection("Users").document("sendcoins@test.com")
+                .collection("Limitations").get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot documentSnapshots) {
                         if(documentSnapshots.getDocuments().get(0).exists()) {
                             HashMap<String, Integer> myUpdate = new HashMap<>();
                             myUpdate.put("Banked", 0);
-                            firebaseFirestore.collection("Users").document("sendcoins@test.com").collection("Limitations").document(documentSnapshots.getDocuments().get(0).getId()).delete();
-                            firebaseFirestore.collection("Users").document("sendcoins@test.com").collection("Limitations").document("12123123").set(myUpdate);
+                            firebaseFirestore.collection("Users")
+                                    .document("sendcoins@test.com")
+                                    .collection("Limitations")
+                                    .document(documentSnapshots.getDocuments()
+                                            .get(0).getId()).delete();
+                            firebaseFirestore.collection("Users")
+                                    .document("sendcoins@test.com")
+                                    .collection("Limitations")
+                                    .document("12123123").set(myUpdate);
                         }
                     }
                 })
@@ -131,7 +159,8 @@ public class ManageFriendsTest {
         DataInteraction manage_friends_list = onData(anything())
                 .inAdapterView(allOf(withId(R.id.MF_friendList),
                         childAtPosition(
-                                withClassName(is("android.support.constraint.ConstraintLayout")),
+                                withClassName(is("android.support.constraint." +
+                                        "ConstraintLayout")),
                                 2)))
                 .atPosition(0);
 
@@ -384,14 +413,19 @@ public class ManageFriendsTest {
         //==========================================================================================
         // Reset values correctly so that this test can be run multiple times
         String currentUser = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-        firebaseFirestore.collection("Users").document(currentUser).collection("Limitations").get()
+        firebaseFirestore.collection("Users").document(currentUser)
+                .collection("Limitations").get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot documentSnapshots) {
                         HashMap<String, Integer> myUpdate = new HashMap<>();
                         myUpdate.put("Banked", 0);
-                        firebaseFirestore.collection("Users").document(currentUser).collection("Limitations").document(documentSnapshots.getDocuments().get(0).getId()).delete();
-                        firebaseFirestore.collection("Users").document(currentUser).collection("Limitations").document("12123123").set(myUpdate);
+                        firebaseFirestore.collection("Users").document(currentUser)
+                                .collection("Limitations")
+                                .document(documentSnapshots.getDocuments().get(0).getId()).delete();
+                        firebaseFirestore.collection("Users").document(currentUser)
+                                .collection("Limitations")
+                                .document("12123123").set(myUpdate);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {

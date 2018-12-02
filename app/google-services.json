@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "740369555131",
+    "firebase_url": "https://davidcoinz-cb498.firebaseio.com",
+    "project_id": "davidcoinz-cb498",
+    "storage_bucket": "davidcoinz-cb498.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:740369555131:android:672d89ce985fb56a",
+        "android_client_info": {
+          "package_name": "com.example.s1651374.david_coinz"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "740369555131-bpehlgs3npao386ssqgnnaro4vc9t92d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.s1651374.david_coinz",
+            "certificate_hash": "eda6b9558e7b636e3b4ea67d63eb19ec5b52be68"
+          }
+        },
+        {
+          "client_id": "740369555131-tftdn9pjo2mrul0ushgh59qf69npudln.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBo5THSbUhzBKAEq1CiQGZNuQ_LM_XZcdU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "740369555131-tftdn9pjo2mrul0ushgh59qf69npudln.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
