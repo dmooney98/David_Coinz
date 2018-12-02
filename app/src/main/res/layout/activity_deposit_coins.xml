@@ -7,7 +7,7 @@
     tools:context=".DepositCoins">
 
     <ImageView
-        android:id="@+id/background"
+        android:id="@+id/DC_background"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:scaleType="centerCrop"
@@ -62,7 +62,7 @@
         app:layout_constraintVertical_bias="0.0" />
 
     <TextView
-        android:id="@+id/textView14"
+        android:id="@+id/DC_dolrText"
         android:layout_width="300dp"
         android:layout_height="25dp"
         android:layout_marginBottom="28dp"
@@ -71,13 +71,13 @@
         android:textColor="#000000"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/textView15"
+        app:layout_constraintBottom_toTopOf="@+id/DC_penyText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/imageButton" />
+        app:layout_constraintStart_toEndOf="@+id/DC_dolrImg" />
 
     <TextView
-        android:id="@+id/textView15"
+        android:id="@+id/DC_penyText"
         android:layout_width="300dp"
         android:layout_height="25dp"
         android:layout_marginBottom="32dp"
@@ -86,13 +86,13 @@
         android:textColor="#000000"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/textView16"
+        app:layout_constraintBottom_toTopOf="@+id/DC_quidText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/imageButton2" />
+        app:layout_constraintStart_toEndOf="@+id/DC_penyImg" />
 
     <TextView
-        android:id="@+id/textView16"
+        android:id="@+id/DC_quidText"
         android:layout_width="300dp"
         android:layout_height="25dp"
         android:layout_marginBottom="28dp"
@@ -101,13 +101,13 @@
         android:textColor="#000000"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/textView17"
+        app:layout_constraintBottom_toTopOf="@+id/DC_shilText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/imageButton3" />
+        app:layout_constraintStart_toEndOf="@+id/DC_quidImg" />
 
     <TextView
-        android:id="@+id/textView17"
+        android:id="@+id/DC_shilText"
         android:layout_width="300dp"
         android:layout_height="25dp"
         android:layout_marginBottom="372dp"
@@ -119,43 +119,43 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/imageButton4" />
+        app:layout_constraintStart_toEndOf="@+id/DC_shilImg" />
 
     <ImageButton
-        android:id="@+id/imageButton"
+        android:id="@+id/DC_dolrImg"
         android:layout_width="42dp"
         android:layout_height="50dp"
         android:layout_marginBottom="8dp"
         android:layout_marginTop="56dp"
         android:background="#0000"
-        app:layout_constraintBottom_toTopOf="@+id/imageButton2"
+        app:layout_constraintBottom_toTopOf="@+id/DC_penyImg"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/dolr0" />
 
     <ImageButton
-        android:id="@+id/imageButton2"
+        android:id="@+id/DC_penyImg"
         android:layout_width="42dp"
         android:layout_height="50dp"
         android:layout_marginBottom="8dp"
         android:background="#0000"
-        app:layout_constraintBottom_toTopOf="@+id/imageButton3"
+        app:layout_constraintBottom_toTopOf="@+id/DC_quidImg"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/peny0" />
 
     <ImageButton
-        android:id="@+id/imageButton3"
+        android:id="@+id/DC_quidImg"
         android:layout_width="42dp"
         android:layout_height="50dp"
         android:layout_marginBottom="4dp"
         android:background="#0000"
-        app:layout_constraintBottom_toTopOf="@+id/imageButton4"
+        app:layout_constraintBottom_toTopOf="@+id/DC_shilImg"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/quid0" />
 
     <ImageButton
-        android:id="@+id/imageButton4"
+        android:id="@+id/DC_shilImg"
         android:layout_width="42dp"
         android:layout_height="50dp"
         android:layout_marginBottom="364dp"
@@ -165,7 +165,7 @@
         app:srcCompat="@drawable/shil0" />
 
     <TextView
-        android:id="@+id/textView18"
+        android:id="@+id/DC_ratesText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -176,7 +176,7 @@
         android:textColor="#000000"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/textView14"
+        app:layout_constraintBottom_toTopOf="@+id/DC_dolrText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
@@ -184,7 +184,7 @@
         app:layout_constraintVertical_bias="0.301" />
 
     <Button
-        android:id="@+id/dc_bank_coins"
+        android:id="@+id/DC_bank_coins"
         android:layout_width="100dp"
         android:layout_height="50dp"
         android:layout_marginBottom="8dp"
@@ -241,7 +241,7 @@
         app:layout_constraintVertical_bias="0.907" />
 
     <TextView
-        android:id="@+id/goldPassField"
+        android:id="@+id/DC_goldPassField"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -260,7 +260,7 @@
         app:layout_constraintVertical_bias="0.499" />
 
     <TextView
-        android:id="@+id/bankPassField"
+        android:id="@+id/DC_bankPassField"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"

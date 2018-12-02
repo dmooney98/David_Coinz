@@ -3,30 +3,22 @@ package com.example.s1651374.david_coinz;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Camera;
 import android.location.Location;
 import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.location.LocationEngineListener;
@@ -46,28 +38,38 @@ import com.mapbox.mapboxsdk.plugins.locationlayer.modes.RenderMode;
 
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
-import com.mapbox.geojson.Geometry;
 import com.mapbox.geojson.Point;
-import com.google.gson.JsonObject;
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
-import javax.annotation.Nullable;
+//==================================================================================================
+// This activity shows the user their position on a map, whilst also showing the location of all of
+// the coins which they have not collected yet, shown as marker images whose colours and numbers are
+// in respect to their currency and value.  The user is able to collect coins from this activity,
+// which will update their database correctly.  The activity also shows the user the number of coins
+// currently in their wallet.  From this activity, the user can go to MainMenu or DepositCoins
+public class MapScreen extends AppCompatActivity implements OnMapReadyCallback,
+        LocationEngineListener, PermissionsListener {
 
-public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, LocationEngineListener, PermissionsListener {
+    //==============================================================================================
+    // Create variables which allow connection to Firebase, the use of mapbox and its placement of
+    // markers, and the display of the number of coins in the user's wallet.  Also be able to
+    // receive and transfer goldPass and bankPass
 
+    // Variables which allow the connection to, retrieval, and updating of data in Firebase
     private FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-    private int coinCount;
+    private String currentUser;
+    private HashMap<String, Coin> theCoins = new HashMap<>();
+    private CollectionReference collRef;
+
+    // Variables which allow the Map to work and the appropriate permissions to be obtained for
+    // this, as well as being able to place and remove markers correctly
     private String tag = "MapScreen";
     private MapView mapView;
     private MapboxMap map;
@@ -76,24 +78,29 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
     private LocationLayerPlugin locationLayerPlugin;
     private Location originLocation;
     private String mapdataString;
-    private FeatureCollection featureCollection;
-    private List<Feature> features;
     private HashMap<String, Marker> markers = new HashMap<>();
-    private HashMap<String, Coin> theCoins = new HashMap<>();
-    private FirebaseAuth mAuth;
-    private String currentUser;
-    private CollectionReference collRef;
-    private String user_choice = "@string/mapbox_style_mapbox_streets";
-    private Double goldPass;
-    private int bankPass;
+
+    // Variables which allow for the number of coins currently in the users wallet to be displayed
+    // properly
     private DecimalFormat df = new DecimalFormat("#.###");
     private TextView map_wallet_count;
+    private int coinCount;
 
+    // goldPass and bankPass variables, which must be taken and initialised in case the user decides
+    // to go to DepositCoins from MapScreen
+    private Double goldPass;
+    private int bankPass;
+
+    //==============================================================================================
+    // Code from lectures, as well as retrieval of required information from Bundle, initialising
+    // certain variables for later use, and accessing Firebase to ensure the correct number of coins
+    // in the user's wallet is displayed
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_screen);
 
+        // Code from lectures
         Mapbox.getInstance(this, getString(R.string.access_token));
 
         mapView = (MapView) findViewById(R.id.mapboxMapView);
@@ -101,35 +108,51 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 
+        // Access Bundle to get values for the mapdata string, as well as goldPass and bankPass for
+        // potential later use in passing to DepositCoins
         Bundle bundle = getIntent().getExtras();
         mapdataString = bundle.getString("mapdata");
         goldPass = bundle.getDouble("goldPass");
         bankPass = bundle.getInt("bankPass");
-        mAuth = FirebaseAuth.getInstance();
-        currentUser = mAuth.getCurrentUser().getEmail();
-        collRef = firebaseFirestore.collection("Users").document(currentUser).collection("Removed");
 
-        firebaseFirestore.collection("Users").document(currentUser).collection("Wallet").get()
+        // Connect to Firebase to retrieve information on how many coins are in the user's wallet,
+        // so that this can be displayed and updated correctly while the user is playing
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser().getEmail();
+        collRef = firebaseFirestore.collection("Users").document(currentUser)
+                .collection("Removed");
+
+        firebaseFirestore.collection("Users").document(currentUser)
+                .collection("Wallet").get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        // Retrieve information on how many coins are in the user's wallet from
+                        // Firebase, and update the TextView to display this
                         coinCount = queryDocumentSnapshots.size();
-                        map_wallet_count = findViewById(R.id.map_wallet_count);
+                        map_wallet_count = findViewById(R.id.MS_map_wallet_count);
                         map_wallet_count.setText(String.valueOf(coinCount));
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(MapScreen.this, "Failed to establish connection to DataBase, please try again.", Toast.LENGTH_SHORT).show();
+                        // Inform the user of error with connection
+                        Toast.makeText(MapScreen.this,
+                                "Failed to establish connection to DataBase, " +
+                                        "please try again.", Toast.LENGTH_SHORT).show();
                     }
                 });
 
 
     }
 
+    //==============================================================================================
+    // Code from lectures, then parsing of the geoJSON information in order to place markers
+    // correctly on the map, with useful information when the user taps on them
     @Override
     public void onMapReady(MapboxMap mapboxMap) {
+        // Code from lectures
         if(mapboxMap == null) {
             Log.d(tag, "[onMapReady] mapBox is null");
         } else {
@@ -141,25 +164,42 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
             // Make location information available
             enableLocation();
 
-            featureCollection = FeatureCollection.fromJson(mapdataString);
-            features = featureCollection.features();
+            // Create a FeatureCollection to utilise the fromJson() method on the mapdata string,
+            // then create a List of these features so that these can be iterated through to obtain
+            // the required information and make markers for the map using this
+            FeatureCollection featureCollection = FeatureCollection.fromJson(mapdataString);
+            List<Feature> features = featureCollection.features();
 
+            // Iterate through each of the Features obtained from the geoJSON
             for (Feature f : features) {
                 if (f.geometry() instanceof Point) {
-
+                    // Obtain the required information on the id, value, currency, and position of
+                    // the feature, as we know it is a Point
                     String id = f.properties().get("id").getAsString();
                     Double value = f.properties().get("value").getAsDouble();
-                    //String title = f.properties().get("marker-symbol").getAsString();
                     String snippet = f.properties().get("currency").getAsString();
-                    LatLng latLng = new LatLng(((Point) f.geometry()).latitude(), ((Point) f.geometry()).longitude());
-                    Icon icon = determineMarker(f.properties().get("currency").getAsString(), f.properties().get("marker-symbol").getAsString());
+                    LatLng latLng = new LatLng(((Point) f.geometry()).latitude(),
+                            ((Point) f.geometry()).longitude());
 
+                    // Use our determineMarker function to determine which icon the Marker should be
+                    // given, based on currency and value
+                    Icon icon = determineMarker(f.properties().get("currency").getAsString(),
+                            f.properties().get("marker-symbol").getAsString());
+
+                    // Utilise the database to determine if the coin has already been collected and
+                    // is therefore in 'Removed'
                     collRef.document(id).get()
                             .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                 @Override
                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                                     if(!documentSnapshot.exists()) {
-                                        Marker current = map.addMarker(new MarkerOptions().position(latLng).title(id).snippet(snippet).icon(icon));
+                                        // The coin has not been collected before, so create its
+                                        // appropriate marker with the information retrieved about
+                                        // it, and add it to the HashMap of Coins and its marker to
+                                        // the HashMap of Markers
+                                        Marker current = map.addMarker(new MarkerOptions()
+                                                .position(latLng).title(id).snippet(snippet)
+                                                .icon(icon));
                                         Coin tempCoin = new Coin(id, snippet, value);
                                         theCoins.put(id, tempCoin);
                                         markers.put(id, current);
@@ -169,7 +209,10 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
                             .addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
-                                    Toast.makeText(MapScreen.this, "Failed to establish connection to DataBase, please try again.", Toast.LENGTH_SHORT).show();
+                                    // Inform the user of error with connection
+                                    Toast.makeText(MapScreen.this,
+                                            "Failed to establish connection to DataBase, " +
+                                                    "please try again.", Toast.LENGTH_SHORT).show();
                                 }
                             });
                         }
@@ -178,6 +221,8 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
 
     }
 
+    //==============================================================================================
+    // Code from lectures
     private void enableLocation() {
         if (PermissionsManager.areLocationPermissionsGranted(this)) {
             Log.d(tag, "Permissions are granted");
@@ -190,6 +235,8 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
         }
     }
 
+    //==============================================================================================
+    // Code from lectures
     @SuppressWarnings("MissingPermission")
     private void  initializeLocationEngine() {
         locationEngine = new LocationEngineProvider(this).obtainBestLocationEngineAvailable();
@@ -207,6 +254,8 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
         }
     }
 
+    //==============================================================================================
+    // Code from lectures
     @SuppressWarnings("MissingPermission")
     private void initializeLocationLayer() {
         if (mapView == null) {
@@ -223,12 +272,16 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
         }
     }
 
+    //==============================================================================================
+    // Code from lectures
     private void setCameraPosition(Location location) {
         LatLng latLng = new LatLng(location.getLatitude(),
                 location.getLongitude());
         map.animateCamera(CameraUpdateFactory.newLatLng(latLng));
     }
 
+    //==============================================================================================
+    // Code from lectures
     @Override
     @SuppressWarnings("MissingPermission")
     public void onConnected() {
@@ -236,8 +289,13 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
         locationEngine.requestLocationUpdates();
     }
 
+    //==============================================================================================
+    // Code from lectures, followed by added code which uses the user's set difficulty to reference
+    // their new position against that of every Marker on the map, to determine whether or not the
+    // user has moved within range to collect the coin.  The database is updated appropriately
     @Override
     public void onLocationChanged(Location location) {
+        // Code from lectures
         if (location == null) {
             Log.d(tag, "[onLocationChanged] location is null");
         } else {
@@ -245,55 +303,97 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
             originLocation = location;
             setCameraPosition(location);
         }
+
+        // Access SharedPreferences to retrieve the difficulty set by the user.  If the difficulty
+        // has not been set, then it is by default on the distance for 'Normal'
         SharedPreferences settings = getSharedPreferences("MyPrefsFile",
                 Context.MODE_PRIVATE);
         double lat = Double.parseDouble(settings.getString("latDifficulty", "0.0005"));
         double lng = Double.parseDouble(settings.getString("lngDifficulty", "0.0005"));
+
+        // Iterate through each Marker on the map
         for (Marker m: map.getMarkers()) {
-                if ((location.getLatitude() > (m.getPosition().getLatitude() - lat)) &&
-                            (location.getLatitude() < (m.getPosition().getLatitude() + lat)) &&
-                            (location.getLongitude() > (m.getPosition().getLongitude() - lng)) &&
-                            (location.getLongitude() < (m.getPosition().getLongitude() + lng))) {
-                        String id = m.getTitle();
-                        Coin tempCoin = theCoins.get(id);
-                        String currency = tempCoin.getCurrency();
-                        Double value = tempCoin.getValue();
-                        Toast.makeText(this, "You found " + df.format(value) + " " + currency + "!", Toast.LENGTH_LONG).show();
-                        map.removeMarker(markers.get(id));
-                        HashMap<String, Object> walletCoin = new HashMap<>();
-                        walletCoin.put("currency", theCoins.get(id).getCurrency());
-                        walletCoin.put("value", theCoins.get(id).getValue());
-                        firebaseFirestore.collection("Users").document(currentUser).collection("Wallet").document(theCoins.get(id).getId()).set(walletCoin);
-                        firebaseFirestore.collection("Users").document(currentUser).collection("Removed").document(theCoins.get(id).getId()).set(walletCoin);
-                        coinCount++;
-                        map_wallet_count.setText(String.valueOf(coinCount));
-                }
+            // Compare the location of the user with the location of the current Marker, to see if
+            // the user is within the range set by the variables retrieved from SharedPreferences
+            if ((location.getLatitude() > (m.getPosition().getLatitude() - lat)) &&
+                    (location.getLatitude() < (m.getPosition().getLatitude() + lat)) &&
+                    (location.getLongitude() > (m.getPosition().getLongitude() - lng)) &&
+                    (location.getLongitude() < (m.getPosition().getLongitude() + lng))) {
+                // The user is within range of the Marker, put the appropriate values into variables
+                // for use in adding the coin to their wallet
+                String id = m.getTitle();
+                Coin tempCoin = theCoins.get(id);
+                String currency = tempCoin.getCurrency();
+                Double value = tempCoin.getValue();
+
+                // Give the user information on the coin they collected
+                Toast.makeText(this, "You found " + df.format(value) + " "
+                        + currency + "!", Toast.LENGTH_LONG).show();
+
+                // Remove the Marker associated with the collected coin from the map
+                map.removeMarker(markers.get(id));
+
+                // Create the required HashMap for adding the Coin to the user's wallet in the
+                // database
+                HashMap<String, Object> walletCoin = new HashMap<>();
+
+                // Put the required values of the Coin's currency and it's value into the HashMap to
+                // be stored, as the title of the document is the Coin's id
+                walletCoin.put("currency", theCoins.get(id).getCurrency());
+                walletCoin.put("value", theCoins.get(id).getValue());
+
+                // Add the information to the user's database for both their wallet and their
+                // 'removed'.  This is important that it is stored in two places as wallet can be
+                // manipulated when banking coins or converting them to spare change, but there
+                // must still be an untouched record of coins that the user has collected that
+                // MapScreen can reference to determine which markers to create when the map is
+                // loaded
+                firebaseFirestore.collection("Users").document(currentUser)
+                        .collection("Wallet")
+                        .document(theCoins.get(id).getId()).set(walletCoin);
+                firebaseFirestore.collection("Users").document(currentUser)
+                        .collection("Removed")
+                        .document(theCoins.get(id).getId()).set(walletCoin);
+
+                // Update the on-screen counter which tells the user how many coins are in their
+                // wallet
+                coinCount++;
+                map_wallet_count.setText(String.valueOf(coinCount));
+            }
         }
     }
 
+    //==============================================================================================
+    // Code from lectures, this is not used in my implementation of the app
     @Override
     public void onExplanationNeeded(List<String> permissionsToExplain) {
         Log.d(tag, "Permissions: " + permissionsToExplain.toString());
         // Present toast or dialogue.
     }
 
+    //==============================================================================================
+    // Code from lectures, updated with my own Toast message
     @Override
     public void onPermissionResult(boolean granted) {
         Log.d(tag, "[onPermissionResult] granted == " + granted);
         if (granted) {
             enableLocation();
         } else {
-            //Snackbar request_location = Snackbar.make(mapView, "Location is required to play, please enable this in settings", Snackbar.LENGTH_LONG);
-            //request_location.show();
-            // Open a dialogue with the user
+            Toast.makeText(this, "Location is required to play!",
+                    Toast.LENGTH_SHORT).show();
         }
     }
 
+    //==============================================================================================
+    // Code from lectures
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
+    //==============================================================================================
+    // Code from lectures
     @Override
     @SuppressWarnings("MissingPermission")
     protected void onStart() {
@@ -307,18 +407,25 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
         mapView.onStart();
     }
 
+    //==============================================================================================
+    // Code from lectures
     @Override
     protected void onResume() {
         super.onResume();
         mapView.onResume();
     }
 
+    //==============================================================================================
+    // Code from lectures
     @Override
     protected void onPause() {
         super.onPause();
         mapView.onPause();
     }
 
+    //==============================================================================================
+    // Code from lectures, updated so that when onStop() is ran, location updates are cancelled, and
+    // the mapdata string is put into SharedPreferences
     @Override
     protected void onStop() {
         super.onStop();
@@ -337,18 +444,24 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
         mapView.onStop();
     }
 
+    //==============================================================================================
+    // Code from lectures
     @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
         super.onSaveInstanceState(outState, outPersistentState);
         mapView.onSaveInstanceState(outState);
     }
 
+    //==============================================================================================
+    // Code from lectures
     @Override
     public void onLowMemory() {
         super.onLowMemory();
         mapView.onLowMemory();
     }
 
+    //==============================================================================================
+    // Code from lectures
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -358,11 +471,16 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
         mapView.onDestroy();
     }
 
+    //==============================================================================================
+    // Take the user to the MainMenu activity, nothing needs to be passed
     public void goToMainMenu(View view) {
         Intent intent = new Intent (this, MainMenu.class);
         startActivity(intent);
     }
 
+    //==============================================================================================
+    // Take the user to the DepositCoins activity, passing the goldPass and bankPass variables, as
+    // these are required by DepositCoins
     public void goToDepositCoins(View view) {
         Intent intent = new Intent (this, DepositCoins.class);
         intent.putExtra("goldPass", goldPass);
@@ -370,9 +488,11 @@ public class MapScreen extends AppCompatActivity implements OnMapReadyCallback, 
         startActivity(intent);
     }
 
-    // Method which determines which marker should be displayed for the Coin, dependent on it's currency type and value
-    // This was made as a separate method as, although not CPU heavy, it takes up a lot of space and would clutter the
-    // earlier methods which contain other important lines of code.
+    //==============================================================================================
+    // Method which determines which marker should be displayed for the Coin, depending on it's
+    // currency type and value.  This was made as a separate method as, although not CPU heavy, it
+    // takes up a lot of space and would clutter the earlier methods which contain other important
+    // lines of code.
     public Icon determineMarker(String currency, String symbol) {
         IconFactory iconFactory = IconFactory.getInstance(MapScreen.this);
         if (currency.equals("PENY")) {

@@ -92,7 +92,7 @@ public class SignInOutTest {
         //==========================================================================================
         // Initialise all required ViewInteractions for use throughout the test
         ViewInteraction emailText = onView(
-                allOf(withId(R.id.enterEmail),
+                allOf(withId(R.id.SI_enterEmail),
                         childAtPosition(
                                 childAtPosition(
                                         withId(android.R.id.content),
@@ -101,7 +101,7 @@ public class SignInOutTest {
                         isDisplayed()));
 
         ViewInteraction passwordText = onView(
-                allOf(withId(R.id.enterPassword),
+                allOf(withId(R.id.SI_enterPassword),
                         childAtPosition(
                                 childAtPosition(
                                         withId(android.R.id.content),
@@ -110,7 +110,7 @@ public class SignInOutTest {
                         isDisplayed()));
 
         ViewInteraction logIn = onView(
-                allOf(withId(R.id.loginButton), withText("LOG IN"),
+                allOf(withId(R.id.SI_loginButton), withText("LOG IN"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(android.R.id.content),
@@ -119,7 +119,7 @@ public class SignInOutTest {
                         isDisplayed()));
 
         ViewInteraction signUp = onView(
-                allOf(withId(R.id.signupButton), withText("SIGN UP"),
+                allOf(withId(R.id.SI_signupButton), withText("SIGN UP"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(android.R.id.content),
@@ -128,7 +128,7 @@ public class SignInOutTest {
                         isDisplayed()));
 
         ViewInteraction logOut = onView(
-                allOf(withId(R.id.logout_button), withText("LOG OUT"),
+                allOf(withId(R.id.MM_logout_button), withText("LOG OUT"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(android.R.id.content),

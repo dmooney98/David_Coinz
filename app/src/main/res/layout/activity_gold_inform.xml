@@ -7,7 +7,7 @@
     tools:context=".GoldInform">
 
     <ImageView
-        android:id="@+id/background"
+        android:id="@+id/GI_background"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:scaleType="centerCrop"
@@ -20,7 +20,7 @@
         app:srcCompat="@drawable/background1" />
 
     <TextView
-        android:id="@+id/winLoseStandard"
+        android:id="@+id/GI_winLoseStandard"
         android:layout_width="327dp"
         android:layout_height="49dp"
         android:layout_marginBottom="8dp"
@@ -34,11 +34,11 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/background"
+        app:layout_constraintTop_toTopOf="@+id/GI_background"
         app:layout_constraintVertical_bias="0.132" />
 
     <TextView
-        android:id="@+id/goldBanked"
+        android:id="@+id/GI_goldBanked"
         android:layout_width="196dp"
         android:layout_height="44dp"
         android:layout_marginBottom="8dp"
@@ -57,7 +57,7 @@
         app:layout_constraintVertical_bias="0.365" />
 
     <TextView
-        android:id="@+id/textView23"
+        android:id="@+id/GI_goldText"
         android:layout_width="181dp"
         android:layout_height="32dp"
         android:layout_marginBottom="8dp"
@@ -76,7 +76,7 @@
         app:layout_constraintVertical_bias="0.289" />
 
     <TextView
-        android:id="@+id/newTotal"
+        android:id="@+id/GI_newTotal"
         android:layout_width="196dp"
         android:layout_height="44dp"
         android:layout_marginBottom="8dp"
@@ -95,7 +95,7 @@
         app:layout_constraintVertical_bias="0.582" />
 
     <TextView
-        android:id="@+id/textView24"
+        android:id="@+id/GI_totalText"
         android:layout_width="181dp"
         android:layout_height="32dp"
         android:layout_marginBottom="8dp"
@@ -114,7 +114,7 @@
         app:layout_constraintVertical_bias="0.499" />
 
     <Button
-        android:id="@+id/goldinform_okay"
+        android:id="@+id/GI_okay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"

@@ -7,7 +7,7 @@
     tools:context=".Help2">
 
     <ImageView
-        android:id="@+id/background"
+        android:id="@+id/H2_background"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:scaleType="centerCrop"
@@ -19,7 +19,7 @@
         app:srcCompat="@drawable/background1" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/H2_previous"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -59,7 +59,7 @@
         app:layout_constraintVertical_bias="0.0" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/H2_help"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -78,7 +78,7 @@
         app:layout_constraintVertical_bias="0.09" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/H2_header1"
         android:layout_width="225dp"
         android:layout_height="21dp"
         android:layout_marginBottom="8dp"
@@ -90,14 +90,14 @@
         android:textColor="#000000"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/background"
+        app:layout_constraintEnd_toEndOf="@+id/H2_background"
         app:layout_constraintHorizontal_bias="0.509"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.173" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/H2_text1"
         android:layout_width="314dp"
         android:layout_height="152dp"
         android:layout_marginBottom="8dp"
@@ -109,12 +109,12 @@
         android:textSize="13sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/background"
+        app:layout_constraintStart_toStartOf="@+id/H2_background"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.283" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/h2_header2"
         android:layout_width="225dp"
         android:layout_height="21dp"
         android:layout_marginBottom="8dp"
@@ -126,14 +126,14 @@
         android:textColor="#000000"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/background"
+        app:layout_constraintEnd_toEndOf="@+id/H2_background"
         app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.483" />
 
     <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/H2_text2"
         android:layout_width="317dp"
         android:layout_height="103dp"
         android:layout_marginBottom="8dp"
@@ -151,7 +151,7 @@
         app:layout_constraintVertical_bias="0.618" />
 
     <ImageButton
-        android:id="@+id/imageButton1"
+        android:id="@+id/H2_Img1"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginBottom="8dp"
@@ -167,7 +167,7 @@
         app:srcCompat="@drawable/background1" />
 
     <ImageButton
-        android:id="@+id/imageButton2"
+        android:id="@+id/H2_Img2"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginBottom="8dp"
@@ -183,7 +183,7 @@
         app:srcCompat="@drawable/background2" />
 
     <ImageButton
-        android:id="@+id/imageButton3"
+        android:id="@+id/H2_Img3"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginBottom="8dp"
@@ -199,7 +199,7 @@
         app:srcCompat="@drawable/background3" />
 
     <ImageButton
-        android:id="@+id/imageButton4"
+        android:id="@+id/H2_Img4"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginBottom="8dp"
@@ -215,7 +215,7 @@
         app:srcCompat="@drawable/background4" />
 
     <ImageButton
-        android:id="@+id/imageButton5"
+        android:id="@+id/H2_Img5"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginBottom="8dp"
@@ -231,7 +231,7 @@
         app:srcCompat="@drawable/background5" />
 
     <ImageButton
-        android:id="@+id/imageButton6"
+        android:id="@+id/H2_Img6"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginBottom="8dp"

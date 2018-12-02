@@ -75,7 +75,7 @@ public class ManageFriendsTest {
         //==========================================================================================
         // Initialise all required ViewInteractions for use throughout the test
         ViewInteraction emailText = onView(
-                allOf(withId(R.id.enterEmail),
+                allOf(withId(R.id.SI_enterEmail),
                         childAtPosition(
                                 childAtPosition(
                                         withId(android.R.id.content),
@@ -84,7 +84,7 @@ public class ManageFriendsTest {
                         isDisplayed()));
 
         ViewInteraction passwordText = onView(
-                allOf(withId(R.id.enterPassword),
+                allOf(withId(R.id.SI_enterPassword),
                         childAtPosition(
                                 childAtPosition(
                                         withId(android.R.id.content),
@@ -93,7 +93,7 @@ public class ManageFriendsTest {
                         isDisplayed()));
 
         ViewInteraction logIn = onView(
-                allOf(withId(R.id.loginButton), withText("LOG IN"),
+                allOf(withId(R.id.SI_loginButton), withText("LOG IN"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(android.R.id.content),
@@ -111,7 +111,7 @@ public class ManageFriendsTest {
                         isDisplayed()));
 
         ViewInteraction friendAdderText = onView(
-                allOf(withId(R.id.friendAdderText),
+                allOf(withId(R.id.MF_friendAdderText),
                         childAtPosition(
                                 childAtPosition(
                                         withId(android.R.id.content),
@@ -120,7 +120,7 @@ public class ManageFriendsTest {
                         isDisplayed()));
 
         ViewInteraction addFriendButton = onView(
-                allOf(withId(R.id.addFriendButton), withText("ADD FRIEND"),
+                allOf(withId(R.id.MF_addFriendButton), withText("ADD FRIEND"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(android.R.id.content),
@@ -136,7 +136,7 @@ public class ManageFriendsTest {
                 .atPosition(0);
 
         ViewInteraction removeFriendButton = onView(
-                allOf(withId(R.id.removeFriendButton), withText("REMOVE FRIEND"),
+                allOf(withId(R.id.MF_removeFriendButton), withText("REMOVE FRIEND"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(android.R.id.content),

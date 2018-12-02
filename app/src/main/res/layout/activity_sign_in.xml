@@ -7,7 +7,7 @@
     tools:context=".SignIn">
 
     <ImageView
-        android:id="@+id/background"
+        android:id="@+id/SI_background"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:scaleType="centerCrop"
@@ -19,7 +19,7 @@
         app:srcCompat="@drawable/background1" />
 
     <EditText
-        android:id="@+id/enterEmail"
+        android:id="@+id/SI_enterEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -38,7 +38,7 @@
         app:layout_constraintVertical_bias="0.374" />
 
     <EditText
-        android:id="@+id/enterPassword"
+        android:id="@+id/SI_enterPassword"
         android:layout_width="216dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -55,7 +55,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/SI_header"
         android:layout_width="204dp"
         android:layout_height="31dp"
         android:layout_marginBottom="8dp"
@@ -74,7 +74,7 @@
         app:layout_constraintVertical_bias="0.157" />
 
     <Button
-        android:id="@+id/loginButton"
+        android:id="@+id/SI_loginButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -94,7 +94,7 @@
         app:layout_constraintVertical_bias="0.666" />
 
     <Button
-        android:id="@+id/signupButton"
+        android:id="@+id/SI_signupButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -112,4 +112,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.666" />
+
 </android.support.constraint.ConstraintLayout>

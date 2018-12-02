@@ -7,7 +7,7 @@
     tools:context=".MainMenu">
 
     <ImageView
-        android:id="@+id/background"
+        android:id="@+id/MM_background"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:scaleType="centerCrop"
@@ -19,7 +19,7 @@
         app:srcCompat="@drawable/background1" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/MM_header"
         android:layout_width="118dp"
         android:layout_height="65dp"
         android:layout_marginBottom="8dp"
@@ -112,7 +112,7 @@
         app:layout_constraintVertical_bias="0.684" />
 
     <Button
-        android:id="@+id/help_button"
+        android:id="@+id/MM_help_button"
         android:layout_width="110dp"
         android:layout_height="45dp"
         android:layout_marginBottom="8dp"
@@ -131,7 +131,7 @@
         app:layout_constraintVertical_bias="0.784" />
 
     <Button
-        android:id="@+id/logout_button"
+        android:id="@+id/MM_logout_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"

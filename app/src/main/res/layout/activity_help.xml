@@ -7,7 +7,7 @@
     tools:context=".Help">
 
     <ImageView
-        android:id="@+id/background"
+        android:id="@+id/H_background"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:scaleType="centerCrop"
@@ -39,7 +39,7 @@
         app:layout_constraintVertical_bias="0.0" />
 
     <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/H_help"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -58,7 +58,7 @@
         app:layout_constraintVertical_bias="0.09" />
 
     <TextView
-        android:id="@+id/textView6"
+        android:id="@+id/H_header"
         android:layout_width="166dp"
         android:layout_height="21dp"
         android:layout_marginBottom="8dp"
@@ -70,14 +70,14 @@
         android:textColor="#000000"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/background"
+        app:layout_constraintEnd_toEndOf="@+id/H_background"
         app:layout_constraintHorizontal_bias="0.509"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.173" />
 
     <TextView
-        android:id="@+id/textView7"
+        android:id="@+id/H_text1"
         android:layout_width="314dp"
         android:layout_height="70dp"
         android:layout_marginBottom="8dp"
@@ -90,12 +90,12 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.509"
-        app:layout_constraintStart_toStartOf="@+id/background"
+        app:layout_constraintStart_toStartOf="@+id/H_background"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.234" />
 
     <ImageButton
-        android:id="@+id/imageButton1"
+        android:id="@+id/H_dolrImg"
         android:layout_width="50dp"
         android:layout_height="48dp"
         android:layout_marginBottom="8dp"
@@ -106,13 +106,13 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.094"
-        app:layout_constraintStart_toStartOf="@+id/background"
+        app:layout_constraintStart_toStartOf="@+id/H_background"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.363"
         app:srcCompat="@drawable/dolr1" />
 
     <ImageButton
-        android:id="@+id/imageButton2"
+        android:id="@+id/H_penyImg"
         android:layout_width="50dp"
         android:layout_height="48dp"
         android:layout_marginBottom="8dp"
@@ -123,13 +123,13 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.352"
-        app:layout_constraintStart_toStartOf="@+id/background"
+        app:layout_constraintStart_toStartOf="@+id/H_background"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.363"
         app:srcCompat="@drawable/peny1" />
 
     <ImageButton
-        android:id="@+id/imageButton3"
+        android:id="@+id/H_quidImg"
         android:layout_width="50dp"
         android:layout_height="48dp"
         android:layout_marginBottom="8dp"
@@ -140,13 +140,13 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.620"
-        app:layout_constraintStart_toStartOf="@+id/background"
+        app:layout_constraintStart_toStartOf="@+id/H_background"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.363"
         app:srcCompat="@drawable/quid1" />
 
     <ImageButton
-        android:id="@+id/imageButton4"
+        android:id="@+id/H_shilImg"
         android:layout_width="50dp"
         android:layout_height="48dp"
         android:layout_marginBottom="8dp"
@@ -157,13 +157,13 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.873"
-        app:layout_constraintStart_toStartOf="@+id/background"
+        app:layout_constraintStart_toStartOf="@+id/H_background"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.363"
         app:srcCompat="@drawable/shil1" />
 
     <TextView
-        android:id="@+id/textView8"
+        android:id="@+id/H_dolrText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -182,7 +182,7 @@
         app:layout_constraintVertical_bias="0.434" />
 
     <TextView
-        android:id="@+id/textView9"
+        android:id="@+id/H_penyText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -201,7 +201,7 @@
         app:layout_constraintVertical_bias="0.434" />
 
     <TextView
-        android:id="@+id/textView10"
+        android:id="@+id/H_quidText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -220,7 +220,7 @@
         app:layout_constraintVertical_bias="0.434" />
 
     <TextView
-        android:id="@+id/textView11"
+        android:id="@+id/H_shilText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -239,7 +239,7 @@
         app:layout_constraintVertical_bias="0.434" />
 
     <TextView
-        android:id="@+id/textView12"
+        android:id="@+id/H_text2"
         android:layout_width="317dp"
         android:layout_height="86dp"
         android:layout_marginBottom="8dp"
@@ -257,7 +257,7 @@
         app:layout_constraintVertical_bias="0.561" />
 
     <TextView
-        android:id="@+id/textView13"
+        android:id="@+id/H_text3"
         android:layout_width="319dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -274,7 +274,7 @@
         app:layout_constraintVertical_bias="0.848" />
 
     <Button
-        android:id="@+id/button7"
+        android:id="@+id/H_next"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"

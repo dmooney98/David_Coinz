@@ -7,7 +7,7 @@
     tools:context=".SendCoins">
 
     <ImageView
-        android:id="@+id/background"
+        android:id="@+id/SendC_background"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:scaleType="centerCrop"
@@ -40,7 +40,7 @@
         app:layout_constraintVertical_bias="0.0" />
 
     <ListView
-        android:id="@+id/coinList"
+        android:id="@+id/SendC_coinList"
         android:layout_width="353dp"
         android:layout_height="187dp"
         android:layout_marginBottom="8dp"
@@ -50,12 +50,12 @@
         android:scrollbars="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/background"
+        app:layout_constraintStart_toStartOf="@+id/SendC_background"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.232" />
 
     <ListView
-        android:id="@+id/friendList"
+        android:id="@+id/SendC_friendList"
         android:layout_width="353dp"
         android:layout_height="187dp"
         android:layout_marginBottom="8dp"
@@ -65,12 +65,12 @@
         android:scrollbars="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/background"
+        app:layout_constraintStart_toStartOf="@+id/SendC_background"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.787" />
 
     <Button
-        android:id="@+id/sendCoinsButton"
+        android:id="@+id/SendC_sendCoinsButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -90,7 +90,7 @@
         app:layout_constraintVertical_bias="0.944" />
 
     <TextView
-        android:id="@+id/textView21"
+        android:id="@+id/SendC_header1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -109,7 +109,7 @@
         app:layout_constraintVertical_bias="0.111" />
 
     <TextView
-        android:id="@+id/textView22"
+        android:id="@+id/SendC_header2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -129,7 +129,7 @@
         app:layout_constraintVertical_bias="0.52" />
 
     <TextView
-        android:id="@+id/coinHelp"
+        android:id="@+id/SendC_coinHelp"
         android:layout_width="241dp"
         android:layout_height="108dp"
         android:layout_marginBottom="8dp"
@@ -146,7 +146,7 @@
         app:layout_constraintVertical_bias="0.196" />
 
     <TextView
-        android:id="@+id/friendHelp"
+        android:id="@+id/SendC_friendHelp"
         android:layout_width="241dp"
         android:layout_height="95dp"
         android:layout_marginBottom="8dp"

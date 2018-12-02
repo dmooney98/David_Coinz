@@ -10,7 +10,6 @@ import android.test.suitebuilder.annotation.LargeTest;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -29,11 +28,9 @@ import java.util.HashMap;
 
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.replaceText;
-import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withClassName;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
@@ -76,7 +73,7 @@ public class SendCoinsTest {
         //==========================================================================================
         // Initialise all required ViewInteractions for use throughout the test
         ViewInteraction emailText = onView(
-                allOf(withId(R.id.enterEmail),
+                allOf(withId(R.id.SI_enterEmail),
                         childAtPosition(
                                 childAtPosition(
                                         withId(android.R.id.content),
@@ -85,7 +82,7 @@ public class SendCoinsTest {
                         isDisplayed()));
 
         ViewInteraction passwordText = onView(
-                allOf(withId(R.id.enterPassword),
+                allOf(withId(R.id.SI_enterPassword),
                         childAtPosition(
                                 childAtPosition(
                                         withId(android.R.id.content),
@@ -94,7 +91,7 @@ public class SendCoinsTest {
                         isDisplayed()));
 
         ViewInteraction logIn = onView(
-                allOf(withId(R.id.loginButton), withText("LOG IN"),
+                allOf(withId(R.id.SI_loginButton), withText("LOG IN"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(android.R.id.content),
@@ -137,7 +134,7 @@ public class SendCoinsTest {
                 .atPosition(0);
 
         ViewInteraction transferButton = onView(
-                allOf(withId(R.id.transferButton), withText("TRANSFER"),
+                allOf(withId(R.id.SC_transferButton), withText("TRANSFER"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(android.R.id.content),
@@ -164,21 +161,21 @@ public class SendCoinsTest {
                         isDisplayed()));
 
         DataInteraction send_coins_coins = onData(anything())
-                .inAdapterView(allOf(withId(R.id.coinList),
+                .inAdapterView(allOf(withId(R.id.SendC_coinList),
                         childAtPosition(
                                 withClassName(is("android.support.constraint.ConstraintLayout")),
                                 2)))
                 .atPosition(0);
 
         DataInteraction send_coins_friends = onData(anything())
-                .inAdapterView(allOf(withId(R.id.friendList),
+                .inAdapterView(allOf(withId(R.id.SendC_friendList),
                         childAtPosition(
                                 withClassName(is("android.support.constraint.ConstraintLayout")),
                                 3)))
                 .atPosition(0);
 
         ViewInteraction send_coins_send_button = onView(
-                allOf(withId(R.id.sendCoinsButton), withText("SEND COINS"),
+                allOf(withId(R.id.SendC_sendCoinsButton), withText("SEND COINS"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(android.R.id.content),
@@ -196,7 +193,7 @@ public class SendCoinsTest {
                         isDisplayed()));
 
         ViewInteraction dc_bank_button = onView(
-                allOf(withId(R.id.dc_bank_coins), withText("BANK COINS"),
+                allOf(withId(R.id.DC_bank_coins), withText("BANK COINS"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(android.R.id.content),
@@ -205,7 +202,7 @@ public class SendCoinsTest {
                         isDisplayed()));
 
         ViewInteraction transfer_inform = onView(
-                allOf(withId(R.id.transfer_okay), withText("OKAY"),
+                allOf(withId(R.id.TI_okay), withText("OKAY"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(android.R.id.content),
@@ -214,7 +211,7 @@ public class SendCoinsTest {
                         isDisplayed()));
 
         ViewInteraction goldInformF_okay = onView(
-                allOf(withId(R.id.goldinformF_okay), withText("OKAY"),
+                allOf(withId(R.id.GIF_okay), withText("OKAY"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(android.R.id.content),
@@ -257,7 +254,7 @@ public class SendCoinsTest {
                         isDisplayed()));
 
         ViewInteraction goldInform_okay = onView(
-                allOf(withId(R.id.goldinform_okay), withText("OKAY"),
+                allOf(withId(R.id.GIF_okay), withText("OKAY"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(android.R.id.content),

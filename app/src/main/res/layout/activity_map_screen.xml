@@ -63,7 +63,7 @@
     </RelativeLayout>
 
     <ImageButton
-        android:id="@+id/moneybag_imagebutton"
+        android:id="@+id/MS_moneybag"
         android:layout_width="95dp"
         android:layout_height="101dp"
         android:layout_marginBottom="8dp"
@@ -80,7 +80,7 @@
         app:srcCompat="@drawable/moneybag" />
 
     <TextView
-        android:id="@+id/map_wallet_count"
+        android:id="@+id/MS_map_wallet_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"

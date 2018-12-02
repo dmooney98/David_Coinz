@@ -31,7 +31,6 @@
         <activity android:name=".GoldInform" />
         <activity android:name=".GoldInformF" />
         <activity android:name=".ManageFriends" />
-        <activity android:name=".RemoveInform" />
         <activity android:name=".SpareChange" />
         <activity android:name=".TransferInform" />
         <activity android:name=".DailyUpdate"></activity>

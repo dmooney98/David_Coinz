@@ -7,7 +7,7 @@
     tools:context=".BankCoins">
 
     <ImageView
-        android:id="@+id/background"
+        android:id="@+id/BC_background"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:scaleType="centerCrop"
@@ -50,12 +50,12 @@
         android:scrollbars="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/background"
+        app:layout_constraintStart_toStartOf="@+id/BC_background"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.336" />
 
     <TextView
-        android:id="@+id/textView19"
+        android:id="@+id/BC_wallet_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -88,7 +88,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/coinList"
+        app:layout_constraintTop_toBottomOf="@+id/BC_coinList"
         app:layout_constraintVertical_bias="1.0" />
 
     <Button
@@ -96,15 +96,15 @@
         android:layout_width="145dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="132dp"
         android:background="#E19819"
-        android:onClick="smallGamble"
         android:text="SMALL GAMBLE"
         android:textColor="#FFFFFF"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/BC_big_gamble"
-        app:layout_constraintEnd_toStartOf="@+id/imageButton7"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
@@ -115,16 +115,15 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:background="#CF7017"
-        android:onClick="bigGamble"
         android:text="BIG GAMBLE"
         android:textColor="#FFFFFF"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/background"
+        app:layout_constraintBottom_toBottomOf="@+id/BC_background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageButton
-        android:id="@+id/imageButton7"
+        android:id="@+id/BC_hint"
         android:layout_width="29dp"
         android:layout_height="40dp"
         android:layout_marginBottom="8dp"
@@ -139,7 +138,7 @@
         app:srcCompat="@drawable/hint" />
 
     <TextView
-        android:id="@+id/textView20"
+        android:id="@+id/BC_help"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -153,12 +152,12 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/imageButton7"
+        app:layout_constraintStart_toEndOf="@+id/BC_hint"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.899" />
 
     <TextView
-        android:id="@+id/coinHelp"
+        android:id="@+id/BC_coinHelp"
         android:layout_width="241dp"
         android:layout_height="95dp"
         android:layout_marginBottom="8dp"
