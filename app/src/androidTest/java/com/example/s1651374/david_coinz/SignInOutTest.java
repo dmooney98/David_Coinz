@@ -47,6 +47,7 @@ public class SignInOutTest {
 
     //==============================================================================================
     // -- IMPORTANT INFORMATION FOR MARKERS -- IMPORTANT INFORMATION FOR MARKERS --
+    // --  DO NOT RUN TEST BEFORE READING   --  DO NOT RUN TEST BEFORE READING   --
     // -- IMPORTANT INFORMATION FOR MARKERS -- IMPORTANT INFORMATION FOR MARKERS --
     //
     // This test will test the app's ability to sign up create a new account for a user, then log
@@ -59,13 +60,21 @@ public class SignInOutTest {
     //
     // Run the app separately and ensure that it is currently logged out of any pre-signed in user.
     // Do not run the same test twice in a row.  To run this test a second time, ensure one of the
-    // other tests have been ran after it, from the logged out state, and then ensure that the app
-    // is once again in a logged out state.  This is due to the other tests resetting the values
-    // needed in the database for this test to be ran twice, and the tests being unable to be ended
-    // on the SignIn activity.
+    // other tests have been ran after it, from the manually logged out state, and then ensure that
+    // the app is once again in a logged out state.  This is due to the other tests resetting the
+    // values needed in the database for this test to be ran twice, and the tests being unable to be
+    // ended on the SignIn activity.
+    //
+    // 1. Launch app and ensure app is logged out of any user
+    // 2. Launch this test
+    // 3. Launch app and ensure app is logged out of any user
+    // 4. Launch a different test
+    // 5. Launch app and ensure app is logged out of any user
+    // 6. This test can now be re-ran
     //
     // IF THESE INSTRUCTIONS ARE NOT FOLLOWED, THIS AND OTHER TESTS MAY BE RENDERED OBSOLETE, CRASH,
-    // AND BE UNABLE TO BE RE-RAN
+    // AND BE UNABLE TO BE RE-RAN.  THIS IS DUE TO THE TEST MAKING CHANGES TO THE DATABASE WHICH
+    // CANNOT BE RESET OTHERWISE.
     @Test
     public void signInOutTest() {
         //==========================================================================================

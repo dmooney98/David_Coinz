@@ -12,7 +12,7 @@ public class Coin {
     private Double value;
 
     //==============================================================================================
-    // Create initialiser, which will always require the id, currency, and value of the coin
+    // Create constructor, which will always require the id, currency, and value of the coin
     Coin(String id, String currency, Double value) {
         this.id = id;
         this.currency = currency;
